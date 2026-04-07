@@ -12,16 +12,16 @@ export default async function LatestInvoices() {
       <h2 className="mb-4 text-sm font-black uppercase tracking-[0.3em] text-slate-400">
         Latest Invoices
       </h2>
-      <div className="flex grow flex-col justify-between glass-card p-6 border-white/40">
-        <div className="bg-white/40 rounded-2xl overflow-hidden border border-white/20">
+      <div className="flex grow flex-col justify-between glass-card p-6 border-white/40 dark:border-white/5">
+        <div className="bg-white/5 dark:bg-slate-950/30 rounded-3xl overflow-hidden border border-white/10 dark:border-white/5">
           {latestInvoices.map((invoice, i) => {
             return (
               <div
                 key={invoice.id}
                 className={clsx(
-                  'flex flex-row items-center justify-between p-4 transition-colors hover:bg-white/60 group cursor-pointer',
+                  'flex flex-row items-center justify-between p-4 transition-colors hover:bg-white/40 dark:hover:bg-white/5 group cursor-pointer',
                   {
-                    'border-t border-white/40': i !== 0,
+                    'border-t border-white/10 dark:border-white/5': i !== 0,
                   },
                 )}
               >
@@ -37,10 +37,10 @@ export default async function LatestInvoices() {
                     <div className="absolute -bottom-1 -right-1 h-3 w-3 rounded-full bg-green-500 border-2 border-white"></div>
                   </div>
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-bold text-slate-900 md:text-base tracking-tight">
+                    <p className="truncate text-sm font-bold text-slate-900 dark:text-white md:text-base tracking-tight transition-colors">
                       {invoice.name}
                     </p>
-                    <p className="hidden text-xs font-medium text-slate-500 sm:block tracking-wide">
+                    <p className="hidden text-xs font-medium text-slate-500 dark:text-slate-400 sm:block tracking-wide transition-colors">
                       {invoice.email}
                     </p>
                   </div>

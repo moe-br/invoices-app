@@ -4,6 +4,7 @@ import {
   UserGroupIcon,
   HomeIcon,
   DocumentDuplicateIcon,
+  Cog6ToothIcon,
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -21,6 +22,7 @@ const links = [
     icon: DocumentDuplicateIcon,
   },
   { name: 'Customers', href: '/dashboard/customers', icon: UserGroupIcon },
+  { name: 'Settings', href: '/dashboard/settings', icon: Cog6ToothIcon },
 ];
 
 
@@ -39,7 +41,7 @@ export default function NavLinks() {
               'flex h-12 grow items-center justify-center gap-3 rounded-2xl px-4 py-2 text-sm font-bold transition-all duration-300 md:flex-none md:justify-start',
               {
                 'bg-tunisia-red text-white shadow-xl shadow-red-500/30 scale-105': pathname === link.href,
-                'text-slate-500 hover:bg-white/50 hover:text-slate-900 border border-transparent hover:border-slate-200/60': pathname !== link.href,
+                'text-slate-500 dark:text-slate-400 hover:bg-white/50 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-slate-100 border border-transparent hover:border-slate-200/60 dark:hover:border-white/10': pathname !== link.href,
               },
             )}
           >

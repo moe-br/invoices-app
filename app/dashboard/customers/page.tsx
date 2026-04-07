@@ -7,20 +7,19 @@ export const metadata: Metadata = {
   title: 'Clients | TuniBill',
 };
 
-export default async function Page({
-  searchParams,
-}: {
-  searchParams?: {
+export default async function Page(props: {
+  searchParams?: Promise<{
     query?: string;
-  };
+  }>;
 }) {
+  const searchParams = await props.searchParams;
   const query = searchParams?.query || '';
   const customers = await fetchFilteredCustomers(query);
 
   return (
     <main className={`w-full ${outfit.className}`}>
       <div className="flex w-full items-center justify-between mb-8">
-        <h1 className="text-2xl font-black text-slate-900 tracking-tight uppercase">Clients</h1>
+        <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight uppercase transition-colors">Clients</h1>
       </div>
       <CustomersTable customers={customers} />
     </main>

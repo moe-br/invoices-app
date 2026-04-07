@@ -21,8 +21,8 @@ export default async function RevenueChart() { // Make component async, remove t
         Revenue Analysis
       </h2>
 
-      <div className="glass-card p-8 border-white/40">
-        <div className="sm:grid-cols-13 mt-0 grid grid-cols-12 items-end gap-3 rounded-2xl bg-slate-50/50 p-6 md:gap-4 border border-slate-200/40">
+      <div className="glass-card p-8 border-white/40 dark:border-white/5">
+        <div className="sm:grid-cols-13 mt-0 grid grid-cols-12 items-end gap-3 rounded-3xl bg-slate-100/10 dark:bg-slate-950/20 p-8 md:gap-6 border border-slate-200/20 dark:border-white/5">
           <div
             className="mb-6 hidden flex-col justify-between text-xs font-bold text-slate-300 sm:flex"
             style={{ height: `${chartHeight}px` }}

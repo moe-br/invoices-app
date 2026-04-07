@@ -13,22 +13,23 @@ const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
 export async function fetchRevenue() {
   try {
-    // Artificially delay a response for demo purposes.
-    // Don't do this in production :)
+    const data = await sql`
+      SELECT 
+        TO_CHAR(date, 'Mon') as month,
+        SUM(amount) / 1000 as revenue
+      FROM invoices
+      GROUP BY DATE_TRUNC('month', date), TO_CHAR(date, 'Mon')
+      ORDER BY DATE_TRUNC('month', date) DESC
+      LIMIT 12
+    `;
 
-    console.log('Fetching revenue data...');
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-
-    const data = await sql<Revenue[]>`SELECT * FROM revenue`;
-    console.log('Data fetch completed after 3 seconds.');
-
-
-    // console.log('Data fetch completed after 3 seconds.');
-
-    return data;
+    return data.map((item) => ({
+      month: item.month,
+      revenue: Number(item.revenue || 0),
+    })).reverse();
   } catch (error) {
     console.error('Database Error:', error);
-    throw new Error('Failed to fetch revenue data.');
+    throw new Error('Failed to fetch real revenue data.');
   }
 }
 

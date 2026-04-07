@@ -59,7 +59,7 @@ export function Card({
       </div>
       <div>
         <h3 className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-1">{title}</h3>
-        <p className="text-4xl font-black text-slate-900 tracking-tight">
+        <p className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">
           {value}
         </p>
       </div>
