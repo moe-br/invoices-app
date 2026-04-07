@@ -1,4 +1,6 @@
-import { lusitana } from '@/app/ui/fonts';
+'use client';
+
+import { outfit, inter } from '@/app/ui/fonts';
 import {
   AtSymbolIcon,
   KeyIcon,
@@ -6,60 +8,89 @@ import {
 } from '@heroicons/react/24/outline';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { Button } from './button';
+import { useActionState } from 'react';
+import { authenticate } from '@/app/lib/actions';
+import { useSearchParams } from 'next/navigation';
+
 
 export default function LoginForm() {
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
+  const [errorMessage, formAction, isPending] = useActionState(
+    authenticate,
+    undefined,
+  );
+
+
   return (
-    <form className="space-y-3">
-      <div className="flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8">
-        <h1 className={`${lusitana.className} mb-3 text-2xl`}>
-          Please log in to continue.
-        </h1>
+    <form action={formAction} className={`${outfit.className} space-y-6`}>
+      <div className="flex-1">
         <div className="w-full">
           <div>
             <label
-              className="mb-3 mt-5 block text-xs font-medium text-gray-900"
+              className="mb-2 block text-xs font-black uppercase tracking-[0.2em] text-slate-300"
               htmlFor="email"
             >
-              Email
+              Email Professionnel
             </label>
-            <div className="relative">
+            <div className="relative group">
               <input
-                className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
+                className="peer block w-full rounded-2xl border border-white/10 bg-white/5 py-4 pl-12 text-sm text-white outline-none transition-all placeholder:text-slate-500 focus:border-tunisia-red/50 focus:bg-white/10 focus:ring-4 focus:ring-tunisia-red/10"
                 id="email"
                 type="email"
                 name="email"
-                placeholder="Enter your email address"
+                placeholder="nom@entreprise.tn"
                 required
               />
-              <AtSymbolIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
+              <AtSymbolIcon className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500 transition-colors peer-focus:text-tunisia-red" />
             </div>
           </div>
-          <div className="mt-4">
+          <div className="mt-6">
             <label
-              className="mb-3 mt-5 block text-xs font-medium text-gray-900"
+              className="mb-2 block text-xs font-black uppercase tracking-[0.2em] text-slate-300"
               htmlFor="password"
             >
-              Password
+              Mot de Passe
             </label>
-            <div className="relative">
+            <div className="relative group">
               <input
-                className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
+                className="peer block w-full rounded-2xl border border-white/10 bg-white/5 py-4 pl-12 text-sm text-white outline-none transition-all placeholder:text-slate-500 focus:border-tunisia-red/50 focus:bg-white/10 focus:ring-4 focus:ring-tunisia-red/10"
                 id="password"
                 type="password"
                 name="password"
-                placeholder="Enter password"
+                placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;"
                 required
                 minLength={6}
               />
-              <KeyIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
+              <KeyIcon className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500 transition-colors peer-focus:text-tunisia-red" />
             </div>
           </div>
         </div>
-        <Button className="mt-4 w-full">
-          Log in <ArrowRightIcon className="ml-auto h-5 w-5 text-gray-50" />
-        </Button>
-        <div className="flex h-8 items-end space-x-1">
-          {/* Add form errors here */}
+        <input type="hidden" name="redirectTo" value={callbackUrl} />
+        
+        <button 
+          className="group relative mt-10 flex h-14 w-full items-center justify-center overflow-hidden rounded-2xl bg-tunisia-red px-8 font-black uppercase tracking-[0.2em] text-white transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:hover:scale-100 shadow-xl shadow-red-500/20"
+          aria-disabled={isPending}
+          disabled={isPending}
+        >
+          <span className="relative z-10 flex items-center gap-2">
+            {isPending ? 'Connexion...' : 'Se Connecter'}
+            {!isPending && <ArrowRightIcon className="h-5 w-5 transition-transform group-hover:translate-x-1" />}
+          </span>
+          <div className="absolute inset-0 z-0 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 transition-opacity group-hover:opacity-100 animate-shimmer"></div>
+        </button>
+
+        <div
+          className="flex h-8 items-end space-x-1"
+          aria-live="polite"
+          aria-atomic="true"
+        >
+          {errorMessage && (
+            <div className="flex items-center gap-2 rounded-xl bg-red-500/10 p-3 text-red-500 border border-red-500/20 mt-4 w-full animate-shake">
+              <ExclamationCircleIcon className="h-5 w-5" />
+              <p className="text-xs font-bold uppercase tracking-wider">{errorMessage}</p>
+            </div>
+          )}
         </div>
       </div>
     </form>

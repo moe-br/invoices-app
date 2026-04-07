@@ -14,14 +14,19 @@ export type Customer = {
   name: string;
   email: string;
   image_url: string;
+  tax_id?: string; // Matricule Fiscal
+  address?: string;
 };
 
 export type Invoice = {
   id: string; // Will be created on the database
   customer_id: string;
-  amount: number; // Stored in cents
+  amount: number; // Stored in cents (HT)
   status: 'pending' | 'paid';
   date: string;
+  vat_rate: number; // e.g., 19, 13, 7
+  vat_amount: number;
+  stamp_duty: number; // Usually 1000 millimes (1 TND)
 };
 
 export type Revenue = {
@@ -51,6 +56,7 @@ export type InvoicesTable = {
   date: string;
   amount: number;
   status: 'pending' | 'paid';
+  tax_id?: string;
 };
 
 export type CustomersTableType = {
@@ -83,5 +89,16 @@ export type InvoiceForm = {
   customer_id: string;
   amount: number;
   status: 'pending' | 'paid';
+  vat_rate: number;
+};
+
+export type CompanyProfile = {
+  name: string;
+  address: string;
+  tax_id: string; // Matricule Fiscal
+  rc_number: string; // Registre de Commerce
+  phone: string;
+  email: string;
+  website: string;
 };
 

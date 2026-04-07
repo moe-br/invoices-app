@@ -4,7 +4,7 @@ import {
   UserGroupIcon,
   InboxIcon,
 } from '@heroicons/react/24/outline';
-import { lusitana } from '@/app/ui/fonts';
+import { outfit, lusitana } from '@/app/ui/fonts';
 
 const iconMap = {
   collected: BanknotesIcon,
@@ -50,17 +50,19 @@ export function Card({
   const Icon = iconMap[type];
 
   return (
-    <div className="rounded-xl bg-gray-50 p-2 shadow-sm">
-      <div className="flex p-4">
-        {Icon ? <Icon className="h-5 w-5 text-gray-700" /> : null}
-        <h3 className="ml-2 text-sm font-medium">{title}</h3>
+    <div className={`glass-card p-6 border-white/40 ${outfit.className}`}>
+      <div className="flex items-center justify-between mb-8">
+        <div className="rounded-2xl bg-gradient-to-br from-tunisia-red/10 to-transparent p-3 border border-tunisia-red/5">
+          {Icon ? <Icon className="h-6 w-6 text-tunisia-red" /> : null}
+        </div>
+        <div className="h-2 w-2 rounded-full bg-slate-200 animate-pulse"></div>
       </div>
-      <p
-        className={`${lusitana.className}
-          truncate rounded-xl bg-white px-4 py-8 text-center text-2xl`}
-      >
-        {value}
-      </p>
+      <div>
+        <h3 className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-1">{title}</h3>
+        <p className="text-4xl font-black text-slate-900 tracking-tight">
+          {value}
+        </p>
+      </div>
     </div>
   );
 }

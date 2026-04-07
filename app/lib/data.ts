@@ -103,7 +103,8 @@ export async function fetchFilteredInvoices(
         invoices.status,
         customers.name,
         customers.email,
-        customers.image_url
+        customers.image_url,
+        customers.tax_id
       FROM invoices
       JOIN customers ON invoices.customer_id = customers.id
       WHERE
@@ -145,22 +146,28 @@ export async function fetchInvoicesPages(query: string) {
 }
 
 export async function fetchInvoiceById(id: string) {
+
   try {
     const data = await sql<InvoiceForm[]>`
       SELECT
         invoices.id,
         invoices.customer_id,
         invoices.amount,
-        invoices.status
+        invoices.status,
+        invoices.vat_rate,
+        invoices.vat_amount,
+        invoices.stamp_duty,
+        invoices.date
       FROM invoices
       WHERE invoices.id = ${id};
     `;
 
     const invoice = data.map((invoice) => ({
       ...invoice,
-      // Convert amount from cents to dollars
-      amount: invoice.amount / 100,
+      // Convert amount from millimes to Dinars
+      amount: invoice.amount / 1000,
     }));
+    console.log(invoice); // Invoice is an empty array []
 
     return invoice[0];
   } catch (error) {
