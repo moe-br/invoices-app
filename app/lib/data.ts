@@ -7,15 +7,14 @@ import {
   LatestInvoiceRaw,
   Revenue,
 } from './definitions';
-import { auth } from '@/auth';
+import { auth } from '@clerk/nextjs/server';
 import { formatCurrency } from './utils';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
 export async function fetchRevenue() {
   try {
-    const session = await auth();
-    const userId = session?.user?.id;
+    const { userId } = await auth();
     if (!userId) throw new Error('Unauthorized');
 
     const data = await sql`
@@ -41,8 +40,7 @@ export async function fetchRevenue() {
 
 export async function fetchLatestInvoices() {
   try {
-    const session = await auth();
-    const userId = session?.user?.id;
+    const { userId } = await auth();
     if (!userId) throw new Error('Unauthorized');
 
     const data = await sql<LatestInvoiceRaw[]>`
@@ -66,8 +64,7 @@ export async function fetchLatestInvoices() {
 
 export async function fetchCardData() {
   try {
-    const session = await auth();
-    const userId = session?.user?.id;
+    const { userId } = await auth();
     if (!userId) throw new Error('Unauthorized');
 
     const invoiceCountPromise = sql`SELECT COUNT(*) FROM invoices WHERE user_id = ${userId}`;
@@ -108,8 +105,7 @@ export async function fetchFilteredInvoices(
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
   try {
-    const session = await auth();
-    const userId = session?.user?.id;
+    const { userId } = await auth();
     if (!userId) throw new Error('Unauthorized');
 
     const invoices = await sql<InvoicesTable[]>`
@@ -144,8 +140,7 @@ export async function fetchFilteredInvoices(
 
 export async function fetchInvoicesPages(query: string) {
   try {
-    const session = await auth();
-    const userId = session?.user?.id;
+    const { userId } = await auth();
     if (!userId) throw new Error('Unauthorized');
 
     const data = await sql`SELECT COUNT(*)
@@ -171,8 +166,7 @@ export async function fetchInvoicesPages(query: string) {
 export async function fetchInvoiceById(id: string) {
 
   try {
-    const session = await auth();
-    const userId = session?.user?.id;
+    const { userId } = await auth();
     if (!userId) throw new Error('Unauthorized');
 
     const data = await sql<InvoiceForm[]>`
@@ -205,8 +199,7 @@ export async function fetchInvoiceById(id: string) {
 
 export async function fetchCustomers() {
   try {
-    const session = await auth();
-    const userId = session?.user?.id;
+    const { userId } = await auth();
     if (!userId) throw new Error('Unauthorized');
 
     const customers = await sql<CustomerField[]>`
@@ -227,8 +220,7 @@ export async function fetchCustomers() {
 
 export async function fetchFilteredCustomers(query: string) {
   try {
-    const session = await auth();
-    const userId = session?.user?.id;
+    const { userId } = await auth();
     if (!userId) throw new Error('Unauthorized');
 
     const data = await sql<CustomersTableType[]>`

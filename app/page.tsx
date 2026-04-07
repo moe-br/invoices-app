@@ -3,25 +3,56 @@ import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { outfit } from '@/app/ui/fonts';
 import Image from 'next/image';
+import Threads from '@/components/Threads';
+import { Show, UserButton } from '@clerk/nextjs';
 
 export default function Page() {
   return (
-    <main className={`flex min-h-screen flex-col bg-slate-950 text-white ${outfit.className} relative overflow-hidden`}>
-      {/* Soft, Fluid Background Decor */}
-      <div className="absolute top-[-10%] right-[-5%] w-[60%] h-[60%] bg-gradient-to-b from-tunisia-red/20 to-rose-500/10 blur-[120px] -z-20 rounded-full animate-pulse" style={{ animationDuration: '8s' }}></div>
-      <div className="absolute bottom-[10%] left-[-10%] w-[50%] h-[50%] bg-gradient-to-tr from-tunisia-blue/20 to-blue-400/10 blur-[140px] -z-20 rounded-full"></div>
-      <div className="absolute top-[40%] left-[40%] w-[30%] h-[30%] bg-purple-500/10 blur-[100px] -z-20 rounded-full mix-blend-screen"></div>
+    <main className={`flex min-h-screen flex-col text-white ${outfit.className} relative overflow-hidden`}>
+      {/* Base Background Color */}
+      <div className="absolute inset-0 bg-slate-950 -z-30"></div>
+
+      {/* Dynamic Threads Background */}
+      <div className="absolute inset-0 -z-20">
+        <Threads 
+          amplitude={2} 
+          distance={0.8} 
+          enableMouseInteraction={true} 
+          color={[0.9, 0, 0.07]} // Tunisia Red
+        />
+      </div>
+
+      {/* Soft, Fluid Background Decor - Optimized for Performance */}
+      <div className="absolute top-[-5%] right-[-5%] w-[40%] h-[40%] bg-gradient-to-b from-tunisia-red/15 to-rose-500/5 blur-[80px] -z-10 rounded-full"></div>
+      <div className="absolute bottom-[20%] left-[-5%] w-[35%] h-[35%] bg-gradient-to-tr from-tunisia-blue/15 to-blue-400/5 blur-[90px] -z-10 rounded-full"></div>
+      <div className="absolute top-[30%] left-[35%] w-[25%] h-[25%] bg-purple-500/5 blur-[60px] -z-10 rounded-full mix-blend-screen"></div>
 
       {/* Header / Nav */}
       <header className="fixed top-0 left-0 right-0 flex items-center justify-between px-8 py-6 md:px-16 md:py-8 z-50 bg-slate-950/20 backdrop-blur-3xl border-b border-white/5">
         <TuniBillLogo />
-        <Link
-          href="/login"
-          className="inline-flex h-12 items-center justify-center rounded-2xl bg-tunisia-red px-8 text-xs font-black uppercase tracking-widest transition-all hover:scale-[1.05] active:scale-95 shadow-xl shadow-red-500/20"
-        >
-          Se Connecter
-          <ArrowRightIcon className="w-4 h-4 ml-2" />
-        </Link>
+        <div className="flex items-center gap-4">
+          <Show when="signed-in">
+            <div className="flex items-center gap-6">
+              <Link 
+                href="/dashboard"
+                className="group flex items-center justify-center gap-3 rounded-2xl bg-white/5 border border-white/10 px-8 py-3 text-xs font-black uppercase tracking-widest backdrop-blur-md transition-all hover:bg-white/15 hover:scale-[1.02] active:scale-95"
+              >
+                Tableau de Bord
+                <ArrowRightIcon className="w-4 h-4" />
+              </Link>
+              <UserButton appearance={{ elements: { userButtonAvatarBox: "w-10 h-10 border border-white/10 shadow-lg" } }} />
+            </div>
+          </Show>
+          <Show when="signed-out">
+            <Link 
+              href="/sign-in"
+              className="group flex items-center justify-center gap-3 rounded-2xl bg-tunisia-red px-8 py-3 text-xs font-black uppercase tracking-widest transition-all hover:bg-rose-600 hover:scale-[1.02] active:scale-95 shadow-xl shadow-red-500/20"
+            >
+              Se Connecter
+              <ArrowRightIcon className="w-4 h-4" />
+            </Link>
+          </Show>
+        </div>
       </header>
 
       {/* Hero Content */}
@@ -35,21 +66,6 @@ export default function Page() {
             La plateforme SaaS premium pour les entreprises tunisiennes. Gérez vos factures, vos clients et votre conformité légale avec élégance.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-6 mt-8">
-            <Link
-              href="/login"
-              className="group flex items-center justify-center gap-3 rounded-[2rem] bg-gradient-to-r from-tunisia-red to-rose-600 px-10 py-5 text-sm font-bold tracking-wider shadow-2xl shadow-red-500/30 transition-all hover:scale-[1.03] hover:shadow-red-500/50 hover:from-rose-600 hover:to-tunisia-red active:scale-95"
-            >
-              <span>Démarrer avec TuniBill</span>
-              <ArrowRightIcon className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Link>
-            <Link
-              href="/login"
-              className="flex items-center justify-center gap-3 rounded-[2rem] border border-white/10 bg-white/5 px-10 py-5 text-sm font-bold tracking-wider backdrop-blur-md transition-all hover:bg-white/15 hover:border-white/20 active:scale-95"
-            >
-              Voir la Démo 👀
-            </Link>
-          </div>
         </div>
 
         {/* Hero Dashboard Preview */}

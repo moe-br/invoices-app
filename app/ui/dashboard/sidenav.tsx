@@ -3,7 +3,7 @@ import NavLinks from '@/app/ui/dashboard/nav-links';
 import TuniBillLogo from '@/app/ui/tunibill-logo';
 import ThemeToggle from '@/app/ui/dashboard/theme-toggle';
 import { PowerIcon } from '@heroicons/react/24/outline';
-import { handleSignOut } from '@/app/lib/actions';
+import { SignOutButton, UserButton } from '@clerk/nextjs';
 
 
 import { outfit } from '@/app/ui/fonts';
@@ -25,12 +25,12 @@ export default function SideNav() {
         
         <div className="flex flex-col gap-3">
           <ThemeToggle />
-          <form action={handleSignOut}>
+          <SignOutButton signOutOptions={{ redirectUrl: '/' }}>
             <button className="flex h-[52px] w-full grow items-center justify-center gap-3 rounded-2xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 p-3 text-sm font-semibold text-slate-600 dark:text-slate-300 shadow-sm transition-all hover:bg-tunisia-red hover:text-white hover:border-tunisia-red hover:shadow-lg hover:shadow-red-500/20 md:flex-none md:justify-start md:p-4">
               <PowerIcon className="w-6" />
               <div className="hidden md:block uppercase tracking-widest text-[10px] font-black">Sign Out</div>
             </button>
-          </form>
+          </SignOutButton>
         </div>
       </div>
     </div>

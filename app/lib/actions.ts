@@ -4,8 +4,7 @@ import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import postgres from 'postgres';
-import { auth, signIn, signOut } from '@/auth';
-import { AuthError } from 'next-auth';
+import { auth } from '@clerk/nextjs/server';
 
 
 const FormSchema = z.object({
@@ -51,8 +50,7 @@ export async function createInvoice(prevState: State, formData: FormData) {
     const date = new Date().toISOString().split('T')[0];
 
     try {
-        const session = await auth();
-        const userId = session?.user?.id;
+        const { userId } = await auth();
         if (!userId) throw new Error('Unauthorized');
 
         await sql`
@@ -95,8 +93,7 @@ export async function updateInvoice(
   const stampDuty = 1000;
 
   try {
-    const session = await auth();
-    const userId = session?.user?.id;
+    const { userId } = await auth();
     if (!userId) throw new Error('Unauthorized');
 
     await sql`
@@ -115,8 +112,7 @@ export async function updateInvoice(
 
 export async function deleteInvoice(id: string) {
   try {
-    const session = await auth();
-    const userId = session?.user?.id;
+    const { userId } = await auth();
     if (!userId) throw new Error('Unauthorized');
 
     await sql`DELETE FROM invoices WHERE id = ${id} AND user_id = ${userId}`;
@@ -126,33 +122,13 @@ export async function deleteInvoice(id: string) {
   }
 }
 
-export async function authenticate(
-  prevState: string | undefined,
-  formData: FormData,
-) {
-  try {
-    await signIn('credentials', formData);
-  } catch (error) {
-    if (error instanceof AuthError) {
-      switch (error.type) {
-        case 'CredentialsSignin':
-          return 'Invalid credentials.';
-        default:
-          return 'Something went wrong.';
-      }
-    }
-    throw error;
-  }
-}
-
 export async function handleSignOut() {
-  await signOut({ redirectTo: '/' });
+  // Clerk sign out is handled on the client side
 }
 
 export async function generateApiKey() {
   try {
-    const session = await auth();
-    const userId = session?.user?.id;
+    const { userId } = await auth();
     if (!userId) throw new Error('Unauthorized');
 
     // Generate a secure 32-byte hex string
@@ -177,8 +153,7 @@ export async function generateApiKey() {
 
 export async function bulkImportCustomers(customers: any[]) {
   try {
-    const session = await auth();
-    const userId = session?.user?.id;
+    const { userId } = await auth();
     if (!userId) throw new Error('Unauthorized');
 
     if (!Array.isArray(customers) || customers.length === 0) {
