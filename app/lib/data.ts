@@ -7,17 +7,23 @@ import {
   LatestInvoiceRaw,
   Revenue,
 } from './definitions';
+import { auth } from '@/auth';
 import { formatCurrency } from './utils';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
 export async function fetchRevenue() {
   try {
+    const session = await auth();
+    const userId = session?.user?.id;
+    if (!userId) throw new Error('Unauthorized');
+
     const data = await sql`
       SELECT 
         TO_CHAR(date, 'Mon') as month,
         SUM(amount) / 1000 as revenue
       FROM invoices
+      WHERE user_id = ${userId}
       GROUP BY DATE_TRUNC('month', date), TO_CHAR(date, 'Mon')
       ORDER BY DATE_TRUNC('month', date) DESC
       LIMIT 12
@@ -35,10 +41,15 @@ export async function fetchRevenue() {
 
 export async function fetchLatestInvoices() {
   try {
+    const session = await auth();
+    const userId = session?.user?.id;
+    if (!userId) throw new Error('Unauthorized');
+
     const data = await sql<LatestInvoiceRaw[]>`
       SELECT invoices.amount, customers.name, customers.image_url, customers.email, invoices.id
       FROM invoices
       JOIN customers ON invoices.customer_id = customers.id
+      WHERE invoices.user_id = ${userId}
       ORDER BY invoices.date DESC
       LIMIT 5`;
 
@@ -55,15 +66,16 @@ export async function fetchLatestInvoices() {
 
 export async function fetchCardData() {
   try {
-    // You can probably combine these into a single SQL query
-    // However, we are intentionally splitting them to demonstrate
-    // how to initialize multiple queries in parallel with JS.
-    const invoiceCountPromise = sql`SELECT COUNT(*) FROM invoices`;
-    const customerCountPromise = sql`SELECT COUNT(*) FROM customers`;
+    const session = await auth();
+    const userId = session?.user?.id;
+    if (!userId) throw new Error('Unauthorized');
+
+    const invoiceCountPromise = sql`SELECT COUNT(*) FROM invoices WHERE user_id = ${userId}`;
+    const customerCountPromise = sql`SELECT COUNT(*) FROM customers WHERE user_id = ${userId}`;
     const invoiceStatusPromise = sql`SELECT
          SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END) AS "paid",
          SUM(CASE WHEN status = 'pending' THEN amount ELSE 0 END) AS "pending"
-         FROM invoices`;
+         FROM invoices WHERE user_id = ${userId}`;
 
     const data = await Promise.all([
       invoiceCountPromise,
@@ -96,6 +108,10 @@ export async function fetchFilteredInvoices(
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
   try {
+    const session = await auth();
+    const userId = session?.user?.id;
+    if (!userId) throw new Error('Unauthorized');
+
     const invoices = await sql<InvoicesTable[]>`
       SELECT
         invoices.id,
@@ -109,11 +125,12 @@ export async function fetchFilteredInvoices(
       FROM invoices
       JOIN customers ON invoices.customer_id = customers.id
       WHERE
+        invoices.user_id = ${userId} AND (
         customers.name ILIKE ${`%${query}%`} OR
         customers.email ILIKE ${`%${query}%`} OR
         invoices.amount::text ILIKE ${`%${query}%`} OR
         invoices.date::text ILIKE ${`%${query}%`} OR
-        invoices.status ILIKE ${`%${query}%`}
+        invoices.status ILIKE ${`%${query}%`} )
       ORDER BY invoices.date DESC
       LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
     `;
@@ -127,15 +144,20 @@ export async function fetchFilteredInvoices(
 
 export async function fetchInvoicesPages(query: string) {
   try {
+    const session = await auth();
+    const userId = session?.user?.id;
+    if (!userId) throw new Error('Unauthorized');
+
     const data = await sql`SELECT COUNT(*)
     FROM invoices
     JOIN customers ON invoices.customer_id = customers.id
     WHERE
+      invoices.user_id = ${userId} AND (
       customers.name ILIKE ${`%${query}%`} OR
       customers.email ILIKE ${`%${query}%`} OR
       invoices.amount::text ILIKE ${`%${query}%`} OR
       invoices.date::text ILIKE ${`%${query}%`} OR
-      invoices.status ILIKE ${`%${query}%`}
+      invoices.status ILIKE ${`%${query}%`} )
   `;
 
     const totalPages = Math.ceil(Number(data[0].count) / ITEMS_PER_PAGE);
@@ -149,6 +171,10 @@ export async function fetchInvoicesPages(query: string) {
 export async function fetchInvoiceById(id: string) {
 
   try {
+    const session = await auth();
+    const userId = session?.user?.id;
+    if (!userId) throw new Error('Unauthorized');
+
     const data = await sql<InvoiceForm[]>`
       SELECT
         invoices.id,
@@ -160,7 +186,7 @@ export async function fetchInvoiceById(id: string) {
         invoices.stamp_duty,
         invoices.date
       FROM invoices
-      WHERE invoices.id = ${id};
+      WHERE invoices.id = ${id} AND invoices.user_id = ${userId};
     `;
 
     const invoice = data.map((invoice) => ({
@@ -179,11 +205,16 @@ export async function fetchInvoiceById(id: string) {
 
 export async function fetchCustomers() {
   try {
+    const session = await auth();
+    const userId = session?.user?.id;
+    if (!userId) throw new Error('Unauthorized');
+
     const customers = await sql<CustomerField[]>`
       SELECT
         id,
         name
       FROM customers
+      WHERE user_id = ${userId}
       ORDER BY name ASC
     `;
 
@@ -196,6 +227,10 @@ export async function fetchCustomers() {
 
 export async function fetchFilteredCustomers(query: string) {
   try {
+    const session = await auth();
+    const userId = session?.user?.id;
+    if (!userId) throw new Error('Unauthorized');
+
     const data = await sql<CustomersTableType[]>`
 		SELECT
 		  customers.id,
@@ -206,10 +241,11 @@ export async function fetchFilteredCustomers(query: string) {
 		  SUM(CASE WHEN invoices.status = 'pending' THEN invoices.amount ELSE 0 END) AS total_pending,
 		  SUM(CASE WHEN invoices.status = 'paid' THEN invoices.amount ELSE 0 END) AS total_paid
 		FROM customers
-		LEFT JOIN invoices ON customers.id = invoices.customer_id
+		LEFT JOIN invoices ON customers.id = invoices.customer_id AND invoices.user_id = ${userId}
 		WHERE
+		  customers.user_id = ${userId} AND (
 		  customers.name ILIKE ${`%${query}%`} OR
-        customers.email ILIKE ${`%${query}%`}
+        customers.email ILIKE ${`%${query}%`} )
 		GROUP BY customers.id, customers.name, customers.email, customers.image_url
 		ORDER BY customers.name ASC
 	  `;

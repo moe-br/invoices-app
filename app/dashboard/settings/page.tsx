@@ -1,4 +1,5 @@
 import { outfit } from '@/app/ui/fonts';
+import ApiKeyGenerator from '@/app/ui/settings/api-key-generator';
 
 export default function Page() {
   return (
@@ -8,7 +9,7 @@ export default function Page() {
       </div>
       
       <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-3xl border border-slate-200/60 dark:border-slate-800 p-8 rounded-3xl shadow-xl">
-        <p className="text-slate-600 dark:text-slate-400 font-medium">Les paramètres de configuration de TuniBill seront disponibles prochainement.</p>
+        <ApiKeyGenerator />
       </div>
     </div>
   );
