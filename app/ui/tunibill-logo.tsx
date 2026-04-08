@@ -4,9 +4,9 @@ import { outfit } from '@/app/ui/fonts';
 export default function TuniBillLogo({ className = "text-white", showRed = false }: { className?: string; showRed?: boolean }) {
   return (
     <div
-      className={`${outfit.className} flex flex-row items-center leading-none ${className} gap-3 group transition-transform hover:scale-[1.02]`}
+      className={`${outfit.className} flex flex-row items-center leading-none ${className} gap-3`}
     >
-      <div className="rounded-xl md:rounded-2xl bg-white/20 p-2 border border-white/30 shadow-inner group-hover:bg-white/30 transition-colors">
+      <div className="rounded-xl md:rounded-2xl bg-white/20 p-2 border border-white/30 shadow-inner">
         <BanknotesIcon className="h-6 w-6 md:h-7 md:w-7 text-white" />
       </div>
       <div className="flex flex-col">

@@ -216,3 +216,114 @@ export async function bulkImportCustomers(customers: any[]) {
     return { success: false, message: 'Internal server error during bulk import.' };
   }
 }
+
+const emptyToUndefined = z.preprocess((val) => (val === '' ? undefined : val), z.string().optional());
+
+const BusinessProfileSchema = z.object({
+  businessType: z.enum(['societe', 'auto_entrepreneur'], {
+    invalid_type_error: 'Veuillez choisir un type d\'activité.',
+  }),
+  businessName: z.string().min(2, 'Le nom doit contenir au moins 2 caractères.'),
+  logoUrl: z.preprocess((val) => (val === '' ? undefined : val), z.string().max(2000000, 'Le logo doit faire moins de 2Mo.').optional()),
+  taxId: z.string().min(1, 'Le Matricule Fiscal est obligatoire.'),
+  cin: z.string().min(1, 'Le CIN est obligatoire.'),
+  phone: z.string().min(8, 'Le numéro de téléphone est obligatoire.'),
+  email: z.string().email('Email invalide.').min(1, 'Email obligatoire.'),
+  address: z.string().min(5, 'L\'adresse est obligatoire.'),
+  website: z.string().min(1, 'Le site web (ou lien social) est obligatoire.'),
+});
+
+export async function saveBusinessProfile(formData: FormData) {
+  console.log('saveBusinessProfile called with:', Object.fromEntries(formData.entries()));
+  
+  const validatedFields = BusinessProfileSchema.safeParse({
+    businessType: formData.get('businessType'),
+    businessName: formData.get('businessName'),
+    logoUrl: formData.get('logoUrl'),
+    taxId: formData.get('taxId'),
+    cin: formData.get('cin'),
+    phone: formData.get('phone'),
+    email: formData.get('email'),
+    address: formData.get('address'),
+    website: formData.get('website'),
+  });
+
+  if (!validatedFields.success) {
+    const fieldErrors = validatedFields.error.flatten().fieldErrors;
+    console.error('Validation failed:', fieldErrors);
+    const errorList = Object.entries(fieldErrors)
+      .map(([key, value]) => `${key}: ${value?.join(', ')}`)
+      .join(' | ');
+    return {
+      errors: fieldErrors,
+      message: `Invalid Fields: ${errorList}`,
+    };
+  }
+
+  const { businessType, businessName, logoUrl, taxId, cin, phone, email, address, website } = validatedFields.data;
+
+  try {
+    const { userId } = await auth();
+    console.log('auth() userId:', userId);
+    if (!userId) throw new Error('Unauthorized');
+
+    // Proactive migration: Ensure 'cin' column exists
+    await sql`ALTER TABLE business_profiles ADD COLUMN IF NOT EXISTS cin TEXT;`;
+    
+    const result = await sql`SELECT 1 FROM business_profiles WHERE user_id = ${userId}`;
+    
+    if (result.count > 0) {
+      await sql`
+        UPDATE business_profiles
+        SET 
+          business_type = ${businessType},
+          business_name = ${businessName},
+          logo_url = ${logoUrl || null},
+          tax_id = ${taxId || null},
+          cin = ${cin || null},
+          phone = ${phone || null},
+          email = ${email || null},
+          address = ${address || null},
+          website = ${website || null},
+          updated_at = NOW()
+        WHERE user_id = ${userId}
+      `;
+    } else {
+      await sql`
+        INSERT INTO business_profiles 
+          (user_id, business_type, business_name, logo_url, tax_id, cin, phone, email, address, website)
+        VALUES 
+          (${userId}, ${businessType}, ${businessName}, ${logoUrl || null}, ${taxId || null}, ${cin || null}, ${phone || null}, ${email || null}, ${address || null}, ${website || null})
+      `;
+    }
+    console.log('Database save successful');
+  } catch (error: any) {
+    console.error('Database Error:', error);
+    return {
+      message: `Database Error: ${error.message || 'Failed to save business profile.'}`,
+    };
+  }
+
+  console.log('Revalidating paths and redirecting...');
+  revalidatePath('/dashboard');
+  revalidatePath('/onboarding');
+  redirect('/dashboard');
+}
+
+export async function fetchBusinessProfile() {
+  try {
+    const { userId } = await auth();
+    if (!userId) return null;
+
+    const profile = await sql`
+      SELECT id, user_id, business_type, business_name, logo_url, tax_id, cin, phone, email, address, website 
+      FROM business_profiles 
+      WHERE user_id = ${userId}
+    `;
+
+    return profile[0] || null;
+  } catch (error) {
+    console.error('Database Error:', error);
+    return null;
+  }
+}

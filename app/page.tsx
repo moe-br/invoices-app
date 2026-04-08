@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { outfit } from '@/app/ui/fonts';
 import Image from 'next/image';
 import Threads from '@/components/Threads';
+import Footer from '@/app/ui/footer';
 import { Show, UserButton } from '@clerk/nextjs';
 
 export default function Page() {
@@ -17,10 +18,10 @@ export default function Page() {
         <Threads 
           amplitude={2} 
           distance={0.8} 
-          enableMouseInteraction={true} 
+          enableMouseInteraction={false} 
           color={[0.9, 0, 0.07]} // Tunisia Red
         />
-      </div>
+        </div>
 
       {/* Soft, Fluid Background Decor - Optimized for Performance */}
       <div className="absolute top-[-5%] right-[-5%] w-[40%] h-[40%] bg-gradient-to-b from-tunisia-red/15 to-rose-500/5 blur-[80px] -z-10 rounded-full"></div>
@@ -35,7 +36,7 @@ export default function Page() {
             <div className="flex items-center gap-6">
               <Link 
                 href="/dashboard"
-                className="group flex items-center justify-center gap-3 rounded-2xl bg-white/5 border border-white/10 px-8 py-3 text-xs font-black uppercase tracking-widest backdrop-blur-md transition-all hover:bg-white/15 hover:scale-[1.02] active:scale-95"
+                className="group flex items-center justify-center gap-3 rounded-2xl bg-white/5 border border-white/10 px-8 py-3 text-xs font-black uppercase tracking-widest backdrop-blur-md transition-all hover:bg-white/15"
               >
                 Tableau de Bord
                 <ArrowRightIcon className="w-4 h-4" />
@@ -46,7 +47,7 @@ export default function Page() {
           <Show when="signed-out">
             <Link 
               href="/sign-in"
-              className="group flex items-center justify-center gap-3 rounded-2xl bg-tunisia-red px-8 py-3 text-xs font-black uppercase tracking-widest transition-all hover:bg-rose-600 hover:scale-[1.02] active:scale-95 shadow-xl shadow-red-500/20"
+              className="group flex items-center justify-center gap-3 rounded-2xl bg-tunisia-red px-8 py-3 text-xs font-black uppercase tracking-widest transition-all hover:bg-rose-600 shadow-xl shadow-red-500/20"
             >
               Se Connecter
               <ArrowRightIcon className="w-4 h-4" />
@@ -71,7 +72,7 @@ export default function Page() {
         {/* Hero Dashboard Preview */}
         <div className="relative mt-16 w-full max-w-5xl md:max-w-6xl group">
           <div className="absolute -inset-1 bg-gradient-to-r from-tunisia-red to-tunisia-blue opacity-20 blur-2xl group-hover:opacity-30 transition-opacity"></div>
-          <div className="relative rounded-[3rem] glass-card p-1 border-white/10 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)] overflow-hidden scale-[1.02] transform transition-transform group-hover:scale-[1.03]">
+          <div className="relative rounded-[3rem] glass-card p-1 border-white/10 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)] overflow-hidden transform transition-transform">
             <div className="rounded-[2.9rem] overflow-hidden bg-slate-900/80 backdrop-blur-3xl aspect-[16/10] relative object-cover">
               <Image
                 src="/premium_hero_graphic.png"
@@ -257,55 +258,7 @@ export default function Page() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="w-full px-8 py-16 md:px-24 bg-[#0a0a0f] border-t border-white/5 relative overflow-hidden">
-        {/* Footer Top */}
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 mb-16 relative z-10">
-          <div className="col-span-1 md:col-span-2">
-            <div className="mb-6 opacity-80"><TuniBillLogo /></div>
-            <p className="text-sm text-slate-400 max-w-xs leading-relaxed mb-6">
-              Simplifiez la gestion de votre entreprise et passez plus de temps à faire ce qui compte vraiment. Approuvé par des centaines de PMEs en Tunisie.
-            </p>
-            {/* Socials Placeholder */}
-            <div className="flex gap-4">
-              <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 cursor-pointer transition-colors"><span className="text-xs">𝕏</span></div>
-              <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 cursor-pointer transition-colors"><span className="text-xs font-serif">In</span></div>
-            </div>
-          </div>
-          <div>
-            <h5 className="font-bold text-white mb-6 uppercase tracking-wider text-xs">Produit</h5>
-            <ul className="space-y-3 text-sm text-slate-400">
-              <li className="hover:text-tunisia-red cursor-pointer transition-colors">Fonctionnalités</li>
-              <li className="hover:text-tunisia-red cursor-pointer transition-colors">Tarifs</li>
-              <li className="hover:text-tunisia-red cursor-pointer transition-colors">Guide API</li>
-              <li className="hover:text-tunisia-red cursor-pointer transition-colors">Témoignages</li>
-            </ul>
-          </div>
-          <div>
-            <h5 className="font-bold text-white mb-6 uppercase tracking-wider text-xs">Légal</h5>
-            <ul className="space-y-3 text-sm text-slate-400">
-              <li className="hover:text-tunisia-red cursor-pointer transition-colors">Conditions Générales</li>
-              <li className="hover:text-tunisia-red cursor-pointer transition-colors">Confidentialité</li>
-              <li className="hover:text-tunisia-red cursor-pointer transition-colors">Contact</li>
-            </ul>
-          </div>
-        </div>
-
-        {/* Footer Divider */}
-        <div className="max-w-6xl mx-auto border-t border-white/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4 relative z-10">
-          <p className="text-xs text-slate-500 uppercase tracking-widest font-semibold">
-            &copy; {new Date().getFullYear()} TuniBill. Tous droits réservés.
-          </p>
-
-          {/* Powered by Medicane Badge */}
-          <div className="flex items-center gap-3 px-4 py-2 bg-slate-900 border border-white/5 rounded-full shadow-lg group hover:border-indigo-500/30 transition-all cursor-pointer">
-            <span className="text-[10px] text-slate-400 uppercase tracking-widest">Powered by</span>
-            <div className="flex items-center gap-2 opacity-90 group-hover:opacity-100 transition-opacity">
-              <Image src="/logofooter2.png" alt="Medicane Logo" width={100} height={30} className="w-auto h-6" />
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer className="bg-slate-950 border-white/5" />
     </main>
   );
 }

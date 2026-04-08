@@ -101,6 +101,30 @@ async function seedRevenue() {
   return insertedRevenue;
 }
 
+async function seedBusinessProfiles() {
+  await sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS business_profiles (
+      id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+      user_id TEXT NOT NULL UNIQUE,
+      business_type TEXT NOT NULL,
+      business_name TEXT NOT NULL,
+      logo_url TEXT,
+      tax_id TEXT,
+      cin TEXT,
+      phone TEXT,
+      email TEXT,
+      address TEXT,
+      website TEXT,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+  `;
+
+  return { message: 'Business profiles table verified/created' };
+}
+
 export async function GET() {
   try {
     const result = await sql.begin((sql) => [
@@ -108,6 +132,7 @@ export async function GET() {
       seedCustomers(),
       seedInvoices(),
       seedRevenue(),
+      seedBusinessProfiles(),
     ]);
 
     return Response.json({ message: 'Database seeded successfully' });

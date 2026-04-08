@@ -92,13 +92,21 @@ export type InvoiceForm = {
   vat_rate: number;
 };
 
-export type CompanyProfile = {
-  name: string;
-  address: string;
-  tax_id: string; // Matricule Fiscal
-  rc_number: string; // Registre de Commerce
-  phone: string;
-  email: string;
-  website: string;
+export type BusinessType = 'societe' | 'auto_entrepreneur';
+
+export type BusinessProfile = {
+  id: string;
+  user_id: string;
+  business_type: BusinessType;
+  business_name: string;
+  logo_url?: string;
+  tax_id?: string;
+  cin?: string;
+  phone?: string;
+  email?: string;
+  address?: string;
+  website?: string;
+  created_at?: string;
+  updated_at?: string;
 };
 

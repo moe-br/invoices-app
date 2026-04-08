@@ -1,10 +1,16 @@
 import SideNav from '@/app/ui/dashboard/sidenav';
+import { fetchBusinessProfile } from '@/app/lib/actions';
+import { redirect } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 
+export default async function Layout({ children }: { children: React.ReactNode }) {
+    const profile = await fetchBusinessProfile();
 
+    if (!profile) {
+        redirect('/onboarding');
+    }
 
-export default function Layout({ children }: { children: React.ReactNode }) {
     return (
         <div className="flex h-screen flex-col md:flex-row md:overflow-hidden">
             <div className="w-full flex-none md:w-64">
