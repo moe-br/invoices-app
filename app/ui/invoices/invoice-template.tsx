@@ -1,7 +1,17 @@
 'use client';
 
-import { InvoiceForm, Customer, CompanyProfile } from '@/app/lib/definitions';
+import { InvoiceForm, Customer } from '@/app/lib/definitions';
 import { formatCurrency, formatDateToLocal } from '@/app/lib/utils';
+
+type CompanyProfile = {
+  name: string;
+  address: string;
+  tax_id: string;
+  rc_number: string;
+  phone: string;
+  email: string;
+  website: string;
+};
 
 const companyInfo: CompanyProfile = {
   name: 'TuniBill International',

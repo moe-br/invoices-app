@@ -27,10 +27,10 @@ export type State = {
         amount?: string[];
         status?: string[];
     };
-    message: string;
+    message?: string | null;
 };
 
-export async function createInvoice(prevState: State, formData: FormData) {
+export async function createInvoice(prevState: State, formData: FormData): Promise<State> {
     const { userId } = await auth();
     if (!userId) throw new Error('Unauthorized');
 
@@ -109,7 +109,7 @@ export async function updateInvoice(
   id: string,
   prevState: State,
   formData: FormData,
-) {
+): Promise<State> {
   const validatedFields = UpdateInvoice.safeParse({
     customerId: formData.get('customerId'),
     amount: formData.get('amount'),
