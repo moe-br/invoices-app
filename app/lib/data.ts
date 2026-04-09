@@ -219,7 +219,8 @@ export async function fetchCustomers() {
     const customers = await sql<CustomerField[]>`
       SELECT
         id,
-        name
+        name,
+        email
       FROM customers
       WHERE user_id = ${userId}
       ORDER BY name ASC

@@ -24,8 +24,14 @@ export const formatDateToLocal = (
 
 export const generateYAxis = (revenue: Revenue[]) => {
   const yAxisLabels = [];
-  const highestRecord = Math.max(...revenue.map((month) => month.revenue));
-  const topLabel = Math.ceil(highestRecord / 1000) * 1000;
+  const highestRecord = revenue.length > 0 
+    ? Math.max(...revenue.map((month) => month.revenue))
+    : 0;
+  
+  // Default to 5000 if no data, to show some structure
+  const topLabel = highestRecord > 0 
+    ? Math.ceil(highestRecord / 1000) * 1000
+    : 5000;
 
   for (let i = topLabel; i >= 0; i -= 1000) {
     yAxisLabels.push(i === 0 ? '0' : `${i / 1000}K DT`);

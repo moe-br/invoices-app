@@ -1,10 +1,10 @@
 import { outfit } from '@/app/ui/fonts';
 import { UserButton } from '@clerk/nextjs';
-import ApiKeyGenerator from '@/app/ui/settings/api-key-generator';
 import { fetchBusinessProfile } from '@/app/lib/actions';
 import Link from 'next/link';
 import { PencilIcon, Building2Icon, PhoneIcon, GlobeIcon, MailIcon, MapPinIcon, CheckCircle2, User, FileText } from 'lucide-react';
 import ProfileForm from '@/app/ui/settings/profile-form';
+import DataImportCenter from '@/app/ui/settings/data-import-center';
 
 export default async function Page(props: { searchParams: Promise<{ edit?: string }> }) {
   const searchParams = await props.searchParams;
@@ -16,7 +16,7 @@ export default async function Page(props: { searchParams: Promise<{ edit?: strin
       <div className="flex w-full items-center justify-between mb-8 text-slate-900 dark:text-white transition-colors">
         <h1 className="text-2xl font-black uppercase tracking-tight">Paramètres</h1>
       </div>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Mon Compte Section */}
         <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-3xl border border-slate-200/60 dark:border-slate-800 p-8 rounded-3xl shadow-xl h-fit">
@@ -35,7 +35,7 @@ export default async function Page(props: { searchParams: Promise<{ edit?: strin
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-sm font-black uppercase tracking-widest text-tunisia-red">Informations Business</h2>
             {!isEdit ? (
-              <Link 
+              <Link
                 href="/dashboard/settings?edit=true"
                 className="group flex items-center gap-2 px-4 py-2 bg-tunisia-red text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-red-500/20 transition-all hover:scale-105 active:scale-95"
               >
@@ -43,7 +43,7 @@ export default async function Page(props: { searchParams: Promise<{ edit?: strin
                 Modifier
               </Link>
             ) : (
-              <Link 
+              <Link
                 href="/dashboard/settings"
                 className="group flex items-center gap-2 px-4 py-2 bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all hover:scale-105 active:scale-95"
               >
@@ -51,7 +51,7 @@ export default async function Page(props: { searchParams: Promise<{ edit?: strin
               </Link>
             )}
           </div>
-          
+
           {!isEdit ? (
             <div className="space-y-4">
               <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/30 dark:bg-white/5 border border-white/20 dark:border-white/5">
@@ -106,10 +106,10 @@ export default async function Page(props: { searchParams: Promise<{ edit?: strin
           )}
         </div>
 
-        {/* API & Intégrations Section */}
+        {/* Data & Mobilisation Section */}
         <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-3xl border border-slate-200/60 dark:border-slate-800 p-8 rounded-3xl shadow-xl md:col-span-2">
-          <h2 className="text-sm font-black uppercase tracking-widest text-tunisia-red mb-6">API & Intégrations</h2>
-          <ApiKeyGenerator />
+          <h2 className="text-sm font-black uppercase tracking-widest text-tunisia-red mb-6">Data & Mobilisation</h2>
+          <DataImportCenter />
         </div>
       </div>
     </div>

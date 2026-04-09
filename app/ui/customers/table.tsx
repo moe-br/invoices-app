@@ -1,16 +1,23 @@
-import Image from 'next/image';
+'use client';
+
 import { outfit } from '@/app/ui/fonts';
 import Search from '@/app/ui/search';
 import {
-  CustomersTableType,
   FormattedCustomersTable,
 } from '@/app/lib/definitions';
+import { TrashIcon } from '@heroicons/react/24/outline';
+import { deleteCustomer } from '@/app/lib/actions';
+import { useState } from 'react';
+import ConfirmationModal from '@/app/ui/confirmation-modal';
 
-export default async function CustomersTable({
+export default function CustomersTable({
   customers,
 }: {
   customers: FormattedCustomersTable[];
 }) {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null);
+
   return (
     <div className={`w-full ${outfit.className}`}>
       <Search placeholder="Rechercher des clients..." />
@@ -22,25 +29,32 @@ export default async function CustomersTable({
                 {customers?.map((customer) => (
                   <div
                     key={customer.id}
-                    className="w-full rounded-[2rem] bg-white dark:bg-slate-950/40 p-6 shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-white/5"
+                    className="w-full rounded-[2rem] bg-white dark:bg-slate-950/40 p-6 shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-white/5 group"
                   >
                     <div className="flex items-center justify-between border-b border-slate-50 dark:border-white/5 pb-6 mb-6">
                       <div className="flex items-center gap-4">
                         <div className="relative">
-                          <Image
-                            src={customer.image_url}
-                            className="rounded-full ring-2 ring-white dark:ring-slate-800 shadow-md grayscale group-hover:grayscale-0 transition-all"
-                            width={48}
-                            height={48}
-                            alt={`${customer.name}'s profile picture`}
-                          />
-                          <div className="absolute -bottom-1 -right-1 h-3 w-3 rounded-full bg-blue-500 border-2 border-white dark:border-slate-900"></div>
+                          {/* Initials Avatar */}
+                          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-tunisia-red text-white font-black text-lg shadow-md ring-2 ring-white dark:ring-slate-800 transition-all group-hover:scale-105">
+                            {customer.name.charAt(0).toUpperCase()}
+                          </div>
                         </div>
                         <div>
                           <p className="font-black text-slate-900 dark:text-white tracking-tight">{customer.name}</p>
                           <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{customer.email}</p>
                         </div>
                       </div>
+                      
+                      <button 
+                        onClick={() => {
+                          setSelectedCustomerId(customer.id);
+                          setModalOpen(true);
+                        }}
+                        className="p-3 bg-rose-50 dark:bg-rose-500/10 text-rose-500 rounded-2xl hover:bg-rose-100 dark:hover:bg-rose-500/20 transition-all active:scale-90"
+                        title="Supprimer le client"
+                      >
+                        <TrashIcon className="w-5 h-5" />
+                      </button>
                     </div>
                     <div className="grid grid-cols-3 gap-4 text-center">
                       <div>
@@ -66,6 +80,7 @@ export default async function CustomersTable({
                     <th scope="col" className="px-6 py-8">Factures</th>
                     <th scope="col" className="px-6 py-8">En Attente</th>
                     <th scope="col" className="px-6 py-8">Total Payé</th>
+                    <th scope="col" className="relative py-8 pl-6 pr-10 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="bg-transparent">
@@ -73,13 +88,10 @@ export default async function CustomersTable({
                     <tr key={customer.id} className="w-full border-b border-slate-50 dark:border-white/5 transition-all duration-300 hover:bg-white/60 dark:hover:bg-white/5 group cursor-default">
                       <td className="whitespace-nowrap py-6 pl-10 pr-6">
                         <div className="flex items-center gap-4">
-                          <Image
-                            src={customer.image_url}
-                            className="rounded-full grayscale group-hover:grayscale-0 transition-all duration-500 ring-2 ring-transparent group-hover:ring-white dark:group-hover:ring-slate-700 group-hover:shadow-md"
-                            width={36}
-                            height={36}
-                            alt={`${customer.name}'s profile picture`}
-                          />
+                          {/* Initials Avatar */}
+                          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white font-black text-xs transition-all duration-500 group-hover:bg-tunisia-red group-hover:text-white group-hover:shadow-md">
+                            {customer.name.charAt(0).toUpperCase()}
+                          </div>
                           <div>
                             <p className="font-bold text-slate-950 dark:text-white tracking-tight">{customer.name}</p>
                             <p className="text-xs font-medium text-slate-400 dark:text-slate-500">{customer.email}</p>
@@ -95,15 +107,43 @@ export default async function CustomersTable({
                       <td className="whitespace-nowrap px-6 py-6 text-sm font-black text-green-600 tabular-nums">
                         {customer.total_paid}
                       </td>
+                      <td className="whitespace-nowrap py-6 pl-6 pr-10 text-right">
+                        <div className="flex justify-end gap-3 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-2 group-hover:translate-x-0">
+                          <button 
+                            onClick={() => {
+                              setSelectedCustomerId(customer.id);
+                              setModalOpen(true);
+                            }}
+                            className="p-2 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-50 transition-all shadow-sm dark:shadow-none active:scale-95"
+                            title="Supprimer le client"
+                          >
+                            <TrashIcon className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-
           </div>
         </div>
       </div>
+
+      <ConfirmationModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onConfirm={() => {
+          if (selectedCustomerId) {
+            deleteCustomer(selectedCustomerId);
+            setSelectedCustomerId(null);
+          }
+        }}
+        title="Delete Client?"
+        message="Are you sure you want to remove this client? This will delete all their contact information."
+        confirmLabel="Remove Client"
+        cancelLabel="Keep Client"
+      />
     </div>
   );
 }

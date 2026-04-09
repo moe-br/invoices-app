@@ -27,42 +27,79 @@ export type State = {
         amount?: string[];
         status?: string[];
     };
-    message?: string | null;
+    message: string;
 };
 
 export async function createInvoice(prevState: State, formData: FormData) {
-    const validatedFields = CreateInvoice.safeParse({
-        customerId: formData.get('customerId'),
-        amount: formData.get('amount'),
-        status: formData.get('status'),
-        vat_rate: formData.get('vat_rate'),
-    });
-    if (!validatedFields.success) {
+    const { userId } = await auth();
+    if (!userId) throw new Error('Unauthorized');
+
+    let customerId = formData.get('customerId') as string;
+    const billingName = formData.get('billingName') as string;
+    const email = formData.get('email') as string;
+    const phone = formData.get('phone') as string;
+    const address = formData.get('address') as string;
+    const tax_id = formData.get('tax_id') as string;
+    
+    const amount = parseFloat(formData.get('amount') as string);
+    const status = formData.get('status') as string;
+    const vat_rate = parseFloat(formData.get('vat_rate') as string || '19');
+
+    // Handle flexible customer selection
+    if (!customerId && billingName) {
+        try {
+            const imageUrl = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(billingName)}`;
+            
+            // 1. Manually check if customer exists to avoid constraint issues if ON CONFLICT isn't set up
+            const existing = await sql`SELECT id FROM customers WHERE email = ${email} AND user_id = ${userId}`;
+            
+            if (existing.length > 0) {
+                // 2. Update existing customer
+                customerId = existing[0].id;
+                await sql`
+                    UPDATE customers 
+                    SET 
+                        name = ${billingName},
+                        phone = ${phone || null},
+                        address = ${address || null},
+                        tax_id = ${tax_id || null}
+                    WHERE id = ${customerId} AND user_id = ${userId}
+                `;
+            } else {
+                // 3. Create new customer
+                const newCustomer = await sql`
+                    INSERT INTO customers (user_id, name, email, image_url, phone, address, tax_id)
+                    VALUES (${userId}, ${billingName}, ${email}, ${imageUrl}, ${phone || null}, ${address || null}, ${tax_id || null})
+                    RETURNING id
+                `;
+                customerId = newCustomer[0].id;
+            }
+        } catch (err) {
+            console.error('Failed to handle customer record:', err);
+            return { message: 'Failed to process customer data. Please verify all fields.' };
+        }
+    }
+
+    if (!customerId) {
         return {
-            errors: validatedFields.error.flatten().fieldErrors,
-            message: 'Missing Fields. Failed to Create Invoice.',
+            errors: { customerId: ['Please select a customer or provide a billing name.'] },
+            message: 'Missing Customer. Failed to Create Invoice.',
         };
     }
-    const { customerId, amount, status, vat_rate } = validatedFields.data;
+
     const amountInMillimes = Math.round(amount * 1000);
     const vatAmount = Math.round(amountInMillimes * (vat_rate / 100));
     const stampDuty = 1000;
     const date = new Date().toISOString().split('T')[0];
 
     try {
-        const { userId } = await auth();
-        if (!userId) throw new Error('Unauthorized');
-
         await sql`
       INSERT INTO invoices (customer_id, amount, status, date, vat_rate, vat_amount, stamp_duty, user_id)
       VALUES (${customerId}, ${amountInMillimes}, ${status}, ${date}, ${vat_rate}, ${vatAmount}, ${stampDuty}, ${userId})
     `;
     } catch (error) {
-        // We'll also log the error to the console for now
         console.error(error);
-        return {
-            message: 'Database Error: Failed to Create Invoice.',
-        };
+        return { message: 'Database Error: Failed to Create Invoice.' };
     }
 
     revalidatePath('/dashboard/invoices');
@@ -110,6 +147,22 @@ export async function updateInvoice(
   redirect('/dashboard/invoices');
 }
 
+export async function markInvoiceAsPaid(id: string) {
+  try {
+    const { userId } = await auth();
+    if (!userId) throw new Error('Unauthorized');
+
+    await sql`
+      UPDATE invoices
+      SET status = 'paid'
+      WHERE id = ${id} AND user_id = ${userId}
+    `;
+    revalidatePath('/dashboard/invoices');
+  } catch (error) {
+    console.error('Database Error:', error);
+  }
+}
+
 export async function deleteInvoice(id: string) {
   try {
     const { userId } = await auth();
@@ -119,6 +172,22 @@ export async function deleteInvoice(id: string) {
     revalidatePath('/dashboard/invoices');
   } catch (error) {
     console.error('Delete Error:', error);
+  }
+}
+
+export async function deleteCustomer(id: string) {
+  try {
+    const { userId } = await auth();
+    if (!userId) throw new Error('Unauthorized');
+
+    // Optional: We could check if they have invoices first, 
+    // but for simplicity we'll allow standard cascading or error if DB restricted.
+    await sql`DELETE FROM customers WHERE id = ${id} AND user_id = ${userId}`;
+    revalidatePath('/dashboard/customers');
+    revalidatePath('/dashboard/invoices'); // Customer removal affects invoice dropdown
+  } catch (error) {
+    console.error('Delete Customer Error:', error);
+    return { message: 'Failed to delete customer. Ensure they have no active invoices.' };
   }
 }
 

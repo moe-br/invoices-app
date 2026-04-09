@@ -2,6 +2,8 @@
 
 import { outfit } from '@/app/ui/fonts';
 import { CustomerField, InvoiceForm } from '@/app/lib/definitions';
+import { useState } from 'react';
+import ClientSelect from '@/app/ui/invoices/client-select';
 import {
   CheckIcon,
   ClockIcon,
@@ -25,32 +27,19 @@ export default function EditInvoiceForm({
   const initialState: State = { message: null, errors: {} };
   const updateInvoiceWithId = updateInvoice.bind(null, invoice.id);
   const [state, formAction] = useActionState(updateInvoiceWithId, initialState);
+  const [selectedCustomerId, setSelectedCustomerId] = useState(invoice.customer_id);
   return (
     <form action={formAction} className={outfit.className}>
       <div className="glass-card p-8 md:p-12 border-white/40">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
           {/* Customer Name */}
           <div className="space-y-3">
-            <label htmlFor="customer" className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 block ml-1">
-              Client
-            </label>
-            <div className="relative group">
-              <select
-                id="customer"
-                name="customerId"
-                className="peer block w-full cursor-pointer rounded-2xl border border-slate-200 bg-white/50 py-4 pl-12 text-sm text-slate-900 outline-none transition-all placeholder:text-slate-500 focus:border-tunisia-red focus:bg-white focus:ring-4 focus:ring-tunisia-red/5 shadow-sm"
-                defaultValue={invoice.customer_id}
-                aria-describedby="customer-error"
-              >
-                <option value="" disabled>Sélectionner un client</option>
-                {customers.map((customer) => (
-                  <option key={customer.id} value={customer.id}>
-                    {customer.name}
-                  </option>
-                ))}
-              </select>
-              <UserCircleIcon className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400 transition-colors peer-focus:text-tunisia-red" />
-            </div>
+            <ClientSelect 
+              customers={customers} 
+              value={selectedCustomerId} 
+              onChange={setSelectedCustomerId} 
+              label="Client"
+            />
             <div id="customer-error" aria-live="polite" aria-atomic="true">
               {state.errors?.customerId &&
                 state.errors.customerId.map((error: string) => (
@@ -123,12 +112,7 @@ export default function EditInvoiceForm({
         </div>
 
         <div className="mt-12 flex items-center justify-between border-t border-slate-100 pt-8">
-          <Link
-            href="/dashboard/invoices"
-            className="text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 transition-colors"
-          >
-            Annuler
-          </Link>
+          <div />
           <button 
             type="submit"
             className="flex h-14 items-center gap-3 rounded-2xl bg-tunisia-red px-10 text-xs font-black uppercase tracking-[0.2em] text-white shadow-xl shadow-red-500/20 transition-all hover:scale-[1.05] active:scale-95"
