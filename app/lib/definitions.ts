@@ -16,6 +16,7 @@ export type Customer = {
   image_url: string;
   tax_id?: string; // Matricule Fiscal
   address?: string;
+  phone?: string;
 };
 
 export type Invoice = {
@@ -67,6 +68,7 @@ export type CustomersTableType = {
   total_invoices: number;
   total_pending: number;
   total_paid: number;
+  phone?: string;
 };
 
 export type FormattedCustomersTable = {
@@ -77,6 +79,7 @@ export type FormattedCustomersTable = {
   total_invoices: number;
   total_pending: string;
   total_paid: string;
+  phone?: string;
 };
 
 export type CustomerField = {

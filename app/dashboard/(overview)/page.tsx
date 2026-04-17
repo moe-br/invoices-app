@@ -10,13 +10,22 @@ import CardWrapper from '@/app/ui/dashboard/cards';
 
 
 
+import { CreateInvoice } from '@/app/ui/invoices/buttons';
+import { CreateCustomer } from '@/app/ui/customers/buttons';
+
 export default async function Page() {
 
     return (
         <main>
-            <h1 className={`${lusitana.className} mb-4 text-xl md:text-2xl text-slate-900 dark:text-white transition-colors`}>
-                Dashboard
-            </h1>
+            <div className="flex w-full items-center justify-between mb-8">
+                <h1 className={`${lusitana.className} text-xl md:text-2xl text-slate-900 dark:text-white transition-colors uppercase font-black tracking-tight`}>
+                    Dashboard
+                </h1>
+                <div className="flex items-center gap-3">
+                    <CreateCustomer />
+                    <CreateInvoice />
+                </div>
+            </div>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
                 <Suspense fallback={<CardsSkeleton />}>
                     <CardWrapper />

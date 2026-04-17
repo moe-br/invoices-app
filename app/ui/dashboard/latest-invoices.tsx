@@ -1,15 +1,16 @@
 import { ArrowPathIcon } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
+import Link from 'next/link';
 import { outfit } from '@/app/ui/fonts';
 import { fetchLatestInvoices } from '@/app/lib/data';
 
 export default async function LatestInvoices() {
   const latestInvoices = await fetchLatestInvoices();
-  
+
   const formatInvoiceId = (id: string | number) => {
     const rawId = id.toString();
-    if(/^\d+$/.test(rawId)) {
-        return `Fac_${rawId.padStart(3, '0')}`;
+    if (/^\d+$/.test(rawId)) {
+      return `Fac_${rawId.padStart(3, '0')}`;
     }
     return `Fac_${rawId.substring(0, 4).toUpperCase()}`;
   };
@@ -42,12 +43,12 @@ export default async function LatestInvoices() {
                         {invoice.name}
                       </p>
                       <div className="flex items-center gap-2 mt-1">
-                          <p className="text-[9px] font-black text-tunisia-red uppercase tracking-widest bg-tunisia-red/10 px-2 py-0.5 rounded-full border border-tunisia-red/20 opacity-80">
-                              {formatInvoiceId(invoice.id)}
-                          </p>
-                          <p className="hidden text-[10px] font-medium text-slate-500 dark:text-slate-400 sm:block tracking-wide">
-                              {invoice.email}
-                          </p>
+                        <p className="text-[9px] font-black text-tunisia-red uppercase tracking-widest bg-tunisia-red/10 px-2 py-0.5 rounded-full border border-tunisia-red/20 opacity-80">
+                          {formatInvoiceId(invoice.id)}
+                        </p>
+                        <p className="hidden text-[10px] font-medium text-slate-500 dark:text-slate-400 sm:block tracking-wide">
+                          {invoice.email}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -62,14 +63,23 @@ export default async function LatestInvoices() {
             })}
           </div>
           <div className="flex items-center justify-between mt-8 pt-6 border-t border-slate-200 dark:border-white/5 px-2">
-            <div className="flex items-center gap-3">
-              <ArrowPathIcon className="h-4 w-4 text-emerald-500 dark:text-emerald-400 animate-spin-slow opacity-60" />
-              <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 italic">Synchronisé</h3>
+            <div className="flex items-center gap-2 px-4 py-2 bg-emerald-500/5 dark:bg-emerald-500/10 border border-emerald-500/10 dark:border-emerald-500/20 rounded-full group/sync transition-all hover:bg-emerald-500/10 dark:hover:bg-emerald-500/20">
+              <div className="relative">
+                <ArrowPathIcon className="h-3 w-3 text-emerald-500 dark:text-emerald-400 animate-spin-slow" />
+                <div className="absolute inset-0 bg-emerald-400 rounded-full animate-ping opacity-20 scale-150" />
+              </div>
+              <span className="text-[9px] font-black uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400">Synchronisé</span>
             </div>
-            <button className="relative group/btn py-2 px-6 flex items-center justify-center">
-               <span className="text-[10px] font-black uppercase tracking-[0.3em] text-tunisia-blue group-hover:text-tunisia-red transition-colors">Tout Voir</span>
-               <div className="absolute inset-x-0 -bottom-1 h-[1px] bg-tunisia-blue group-hover:bg-tunisia-red scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
-            </button>
+
+            <Link href="/dashboard/customers">
+              <button className="relative group/btn py-2 px-6 flex items-center justify-center">
+                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-tunisia-blue group-hover:text-tunisia-red transition-colors">
+                  Tout Voir
+                </span>
+                <div className="absolute inset-x-0 -bottom-1 h-[1px] bg-tunisia-blue group-hover:bg-tunisia-red scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
+              </button>
+            </Link>
+
           </div>
         </div>
       </div>

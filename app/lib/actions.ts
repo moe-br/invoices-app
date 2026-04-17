@@ -20,6 +20,49 @@ const CreateInvoice = FormSchema.omit({ id: true, date: true });
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 const UpdateInvoice = FormSchema.omit({ id: true, date: true });
 
+const CustomerSchema = z.object({
+  name: z.string().min(2, 'Le nom doit contenir au moins 2 caractères.'),
+  email: z.string().email('Email invalide.'),
+  phone: z.string().optional(),
+  address: z.string().optional(),
+  tax_id: z.string().optional(),
+});
+
+export async function createCustomer(prevState: any, formData: FormData) {
+  const { userId } = await auth();
+  if (!userId) throw new Error('Unauthorized');
+
+  const validatedFields = CustomerSchema.safeParse({
+    name: formData.get('name'),
+    email: formData.get('email'),
+    phone: formData.get('phone'),
+    address: formData.get('address'),
+    tax_id: formData.get('tax_id'),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Fields. Failed to Create Customer.',
+    };
+  }
+
+  const { name, email, phone, address, tax_id } = validatedFields.data;
+  const imageUrl = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name)}`;
+
+  try {
+    await sql`
+      INSERT INTO customers (user_id, name, email, image_url, phone, address, tax_id)
+      VALUES (${userId}, ${name}, ${email}, ${imageUrl}, ${phone || null}, ${address || null}, ${tax_id || null})
+    `;
+  } catch (error) {
+    return { message: 'Database Error: Failed to Create Customer.' };
+  }
+
+  revalidatePath('/dashboard/customers');
+  redirect('/dashboard/customers');
+}
+
 
 export type State = {
     errors?: {
@@ -102,6 +145,7 @@ export async function createInvoice(prevState: State, formData: FormData): Promi
         return { message: 'Database Error: Failed to Create Invoice.' };
     }
 
+    revalidatePath('/dashboard/customers');
     revalidatePath('/dashboard/invoices');
     redirect('/dashboard/invoices');
 }
@@ -143,6 +187,7 @@ export async function updateInvoice(
     return { message: 'Database Error: Failed to Update Invoice.' };
   }
 
+  revalidatePath('/dashboard/customers');
   revalidatePath('/dashboard/invoices');
   redirect('/dashboard/invoices');
 }
@@ -157,6 +202,7 @@ export async function markInvoiceAsPaid(id: string) {
       SET status = 'paid'
       WHERE id = ${id} AND user_id = ${userId}
     `;
+    revalidatePath('/dashboard/customers');
     revalidatePath('/dashboard/invoices');
   } catch (error) {
     console.error('Database Error:', error);
@@ -169,6 +215,7 @@ export async function deleteInvoice(id: string) {
     if (!userId) throw new Error('Unauthorized');
 
     await sql`DELETE FROM invoices WHERE id = ${id} AND user_id = ${userId}`;
+    revalidatePath('/dashboard/customers');
     revalidatePath('/dashboard/invoices');
   } catch (error) {
     console.error('Delete Error:', error);
@@ -394,5 +441,25 @@ export async function fetchBusinessProfile() {
   } catch (error) {
     console.error('Database Error:', error);
     return null;
+  }
+}
+
+export async function deleteAllCustomers() {
+  try {
+    const { userId } = await auth();
+    if (!userId) throw new Error('Unauthorized');
+
+    // First delete all invoices linked to this user's customers
+    await sql`DELETE FROM invoices WHERE user_id = ${userId}`;
+    
+    // Then delete all customers for this user
+    await sql`DELETE FROM customers WHERE user_id = ${userId}`;
+    
+    revalidatePath('/dashboard/customers');
+    revalidatePath('/dashboard/invoices');
+    return { success: true, message: 'All customers and their invoices have been deleted.' };
+  } catch (error) {
+    console.error('Delete All Customers Error:', error);
+    return { success: false, message: 'Failed to delete all customers.' };
   }
 }

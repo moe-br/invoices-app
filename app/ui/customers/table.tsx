@@ -42,6 +42,9 @@ export default function CustomersTable({
                         <div>
                           <p className="font-black text-slate-900 dark:text-white tracking-tight">{customer.name}</p>
                           <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{customer.email}</p>
+                          {customer.phone && (
+                            <p className="text-[10px] font-bold text-tunisia-red mt-1 tracking-wider">{customer.phone}</p>
+                          )}
                         </div>
                       </div>
                       
@@ -95,6 +98,9 @@ export default function CustomersTable({
                           <div>
                             <p className="font-bold text-slate-950 dark:text-white tracking-tight">{customer.name}</p>
                             <p className="text-xs font-medium text-slate-400 dark:text-slate-500">{customer.email}</p>
+                            {customer.phone && (
+                              <p className="text-[10px] font-bold text-tunisia-red mt-1">{customer.phone}</p>
+                            )}
                           </div>
                         </div>
                       </td>
@@ -108,13 +114,13 @@ export default function CustomersTable({
                         {customer.total_paid}
                       </td>
                       <td className="whitespace-nowrap py-6 pl-6 pr-10 text-right">
-                        <div className="flex justify-end gap-3 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-2 group-hover:translate-x-0">
+                        <div className="flex justify-end gap-3 transition-all duration-300">
                           <button 
                             onClick={() => {
                               setSelectedCustomerId(customer.id);
                               setModalOpen(true);
                             }}
-                            className="p-2 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-50 transition-all shadow-sm dark:shadow-none active:scale-95"
+                            className="p-2.5 bg-rose-50 dark:bg-rose-500/10 border border-rose-100 dark:border-rose-500/20 rounded-xl text-rose-500 hover:text-white hover:bg-rose-500 transition-all shadow-sm dark:shadow-none active:scale-90"
                             title="Supprimer le client"
                           >
                             <TrashIcon className="w-4 h-4" />
