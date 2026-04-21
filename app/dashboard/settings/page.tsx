@@ -1,6 +1,6 @@
 import { outfit } from '@/app/ui/fonts';
 import { UserButton } from '@clerk/nextjs';
-import { fetchBusinessProfile } from '@/app/lib/actions';
+import { fetchBusinessProfile } from '@/app/lib/data';
 import Link from 'next/link';
 import { PencilIcon, Building2Icon, PhoneIcon, GlobeIcon, MailIcon, MapPinIcon, CheckCircle2, User, FileText } from 'lucide-react';
 import ProfileForm from '@/app/ui/settings/profile-form';
