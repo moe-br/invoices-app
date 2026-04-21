@@ -119,7 +119,7 @@ export default function ProfileForm({ initialData }: { initialData: any }) {
     <div className={clsx("w-full space-y-8", outfit.className)}>
       <form onSubmit={handleSubmit} className="space-y-8">
         {message && (
-          <div className={clsx("p-4 rounded-xl border text-xs font-medium", message.includes('Succès') ? "bg-green-50 dark:bg-green-900/20 border-green-200 text-green-600" : "bg-red-50 dark:bg-red-900/20 border-red-200 text-red-600")}>
+          <div className={clsx("p-4 rounded-xl border text-xs font-medium", message.includes('Succès') ? "bg-green-50  border-green-200 text-green-600" : "bg-red-50  border-red-200 text-red-600")}>
             {message}
           </div>
         )}
@@ -138,7 +138,7 @@ export default function ProfileForm({ initialData }: { initialData: any }) {
                   "cursor-pointer p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 text-center",
                   formData.businessType === type.id 
                     ? "border-tunisia-red bg-tunisia-red/5 text-tunisia-red" 
-                    : "border-slate-100 dark:border-slate-800 bg-white/30 dark:bg-white/5 hover:border-slate-200"
+                    : "border-slate-100  bg-white/30  hover:border-slate-200"
                 )}
               >
                 <type.icon className={clsx("w-6 h-6", formData.businessType === type.id ? "text-tunisia-red" : "text-slate-400")} />
@@ -152,12 +152,12 @@ export default function ProfileForm({ initialData }: { initialData: any }) {
           <InputField label={labels.name} icon={Building2} name="businessName" value={formData.businessName} onChange={handleChange} required error={errors.businessName} />
           
           <div className="space-y-2">
-            <label className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-tight">Logo Business</label>
+            <label className="text-xs font-bold text-slate-600  uppercase tracking-tight">Logo Business</label>
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-white/50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center overflow-hidden">
+              <div className="w-12 h-12 rounded-xl bg-white/50  border border-slate-200  flex items-center justify-center overflow-hidden">
                 {formData.logoUrl ? <img src={formData.logoUrl} alt="Preview" className="w-full h-full object-contain" /> : <ImageIcon className="w-5 h-5 text-slate-400" />}
               </div>
-              <label className="flex-1 px-4 py-2 bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-[10px] font-bold uppercase tracking-widest cursor-pointer hover:bg-slate-200 text-center transition-colors">
+              <label className="flex-1 px-4 py-2 bg-slate-100  border border-slate-200  rounded-xl text-[10px] font-bold uppercase tracking-widest cursor-pointer hover:bg-slate-200 text-center transition-colors">
                 Modifier Logo
                 <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
               </label>
@@ -171,18 +171,18 @@ export default function ProfileForm({ initialData }: { initialData: any }) {
           <InputField label="Site Web (Lien) *" icon={Globe} name="website" value={formData.website} onChange={handleChange} required error={errors.website} />
 
           <div className="md:col-span-2 space-y-2">
-            <label className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-tight">Adresse *</label>
+            <label className="text-xs font-bold text-slate-600  uppercase tracking-tight">Adresse *</label>
             <div className="relative group">
               <MapPin className="absolute left-4 top-3 w-4 h-4 text-slate-400 group-focus-within:text-tunisia-red transition-colors" />
               <textarea 
                 name="address" value={formData.address} onChange={handleChange} rows={2} required
-                className="w-full pl-10 pr-4 py-2 text-sm bg-white/50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-tunisia-red outline-none dark:text-white"
+                className="w-full pl-10 pr-4 py-2 text-sm bg-white/50  border border-slate-200  rounded-xl focus:ring-2 focus:ring-tunisia-red outline-none "
               />
             </div>
           </div>
         </div>
 
-        <div className="flex justify-end pt-4 border-t border-slate-100 dark:border-slate-800">
+        <div className="flex justify-end pt-4 border-t border-slate-100 ">
           <Button type="submit" disabled={isSubmitting} className="rounded-2xl px-12 h-12 bg-gradient-to-r from-tunisia-red to-red-600 border-none shadow-xl shadow-red-500/20">
             {isSubmitting ? "Enregistrement..." : "Sauvegarder les modifications"}
           </Button>
@@ -195,12 +195,12 @@ export default function ProfileForm({ initialData }: { initialData: any }) {
 function InputField({ label, icon: Icon, name, value, onChange, required, placeholder, error }: any) {
   return (
     <div className="space-y-2">
-      <label className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-tight">{label}</label>
+      <label className="text-xs font-bold text-slate-600  uppercase tracking-tight">{label}</label>
       <div className="relative group">
         <Icon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-tunisia-red transition-colors" />
         <input 
           type="text" name={name} value={value} onChange={onChange} required={required} placeholder={placeholder}
-          className="w-full pl-10 pr-4 py-2 text-sm bg-white/50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-tunisia-red outline-none dark:text-white"
+          className="w-full pl-10 pr-4 py-2 text-sm bg-white/50  border border-slate-200  rounded-xl focus:ring-2 focus:ring-tunisia-red outline-none "
         />
       </div>
       {error && <p className="text-red-500 text-[10px] mt-1">{error[0]}</p>}

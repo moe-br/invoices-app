@@ -26,18 +26,18 @@ export default async function Page(props: {
     ]);
 
     return (
-        <main className={`${outfit.className} min-h-screen bg-white dark:bg-slate-950 p-4 md:p-8 transition-colors duration-500`}>
+        <main className={`${outfit.className} min-h-screen bg-white  p-4 md:p-6 transition-colors duration-500`}>
             {/* Unified Split Layout */}
-            <div className="flex flex-col xl:flex-row gap-8 h-full max-w-[1600px] mx-auto">
+            <div className="flex flex-col xl:flex-row gap-6 h-full max-w-[1600px] mx-auto">
                 
                 {/* Left Side: Financial Operations List (60%) */}
-                <div className="flex-1 xl:flex-[1.4] flex flex-col min-h-[600px]">
+                <div className="flex-1 xl:flex-[1.3] flex flex-col min-h-[500px]">
                     <FinancialOperations invoices={invoices} />
                 </div>
 
                 {/* Right Side: Invoice Issuance Form (40%) */}
                 <div className="flex-1 xl:flex-1 flex flex-col">
-                    <div className="bg-slate-50 dark:bg-slate-900/50 rounded-[2.5rem] border border-slate-200 dark:border-white/5 overflow-hidden h-full shadow-sm dark:shadow-none transition-all">
+                    <div className="bg-slate-50/50  rounded-[2rem] border border-slate-100  overflow-hidden h-full shadow-sm  transition-all">
                         <Form customers={customers} />
                     </div>
                 </div>
@@ -45,9 +45,9 @@ export default async function Page(props: {
             </div>
 
             {/* Background Decoration */}
-            <div className="fixed top-0 left-0 w-full h-full -z-10 pointer-events-none overflow-hidden opacity-30 dark:opacity-60">
-                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-tunisia-blue/5 dark:bg-tunisia-blue/10 blur-[120px] rounded-full"></div>
-                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-tunisia-red/5 dark:bg-tunisia-red/10 blur-[120px] rounded-full"></div>
+            <div className="fixed top-0 left-0 w-full h-full -z-10 pointer-events-none overflow-hidden opacity-30 ">
+                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-tunisia-blue/5  blur-[120px] rounded-full"></div>
+                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-tunisia-red/5  blur-[120px] rounded-full"></div>
             </div>
         </main>
     );

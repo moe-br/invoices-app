@@ -9,15 +9,15 @@ import { auth } from '@clerk/nextjs/server';
 
 const FormSchema = z.object({
     id: z.string(),
-    customerId: z.string({ invalid_type_error: 'Please select a customer.' }),
-    amount: z.coerce.number().gt(0, { message: 'Please enter an amount greater than $0.' }),
+    customerId: z.string({ invalid_type_error: 'Veuillez sélectionner un client.' }),
+    amount: z.coerce.number().gt(0, { message: 'Veuillez entrer un montant supérieur à 0.' }),
 
-    status: z.enum(['pending', 'paid'], { invalid_type_error: 'Please select an invoice status.', }),
+    status: z.enum(['pending', 'paid'], { invalid_type_error: 'Veuillez sélectionner un état de facture.', }),
     date: z.string(),
     vat_rate: z.coerce.number().default(19),
 });
 const CreateInvoice = FormSchema.omit({ id: true, date: true });
-const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
+import { sql } from './db';
 const UpdateInvoice = FormSchema.omit({ id: true, date: true });
 
 const CustomerSchema = z.object({
@@ -43,7 +43,7 @@ export async function createCustomer(prevState: any, formData: FormData) {
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
-      message: 'Missing Fields. Failed to Create Customer.',
+      message: 'Champs manquants. Échec de la création du client.',
     };
   }
 
@@ -56,7 +56,7 @@ export async function createCustomer(prevState: any, formData: FormData) {
       VALUES (${userId}, ${name}, ${email}, ${imageUrl}, ${phone || null}, ${address || null}, ${tax_id || null})
     `;
   } catch (error) {
-    return { message: 'Database Error: Failed to Create Customer.' };
+    return { message: 'Erreur de base de données : Échec de la création du client.' };
   }
 
   revalidatePath('/dashboard/customers');
@@ -125,24 +125,68 @@ export async function createInvoice(prevState: State, formData: FormData): Promi
 
     if (!customerId) {
         return {
-            errors: { customerId: ['Please select a customer or provide a billing name.'] },
-            message: 'Missing Customer. Failed to Create Invoice.',
+            errors: { customerId: ['Veuillez sélectionner un client ou fournir un nom de facturation.'] },
+            message: 'Client manquant. Échec de la création de la facture.',
         };
     }
 
+    const itemsJson = formData.get('items') as string;
     const amountInMillimes = Math.round(amount * 1000);
     const vatAmount = Math.round(amountInMillimes * (vat_rate / 100));
     const stampDuty = 1000;
     const date = new Date().toISOString().split('T')[0];
 
     try {
+        // Fetch numbering settings for this user
+        const profile = await sql`
+            SELECT invoice_pattern, invoice_digits, invoice_reset 
+            FROM business_profiles 
+            WHERE user_id = ${userId}
+        `;
+        
+        const pattern = profile[0]?.invoice_pattern || '{seq}';
+        const digits = profile[0]?.invoice_digits || 4;
+        const reset = profile[0]?.invoice_reset || 'never';
+
+        // Calculate sequence start date based on reset rule
+        const now = new Date();
+        let startDate = '1970-01-01';
+        if (reset === 'yearly') {
+            startDate = `${now.getFullYear()}-01-01`;
+        } else if (reset === 'monthly') {
+            startDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`;
+        }
+
+        // Calculate the next sequential number
+        const lastInvoice = await sql`
+            SELECT MAX(invoice_number) as max_num 
+            FROM invoices 
+            WHERE user_id = ${userId} AND date >= ${startDate}
+        `;
+        const nextNumber = (lastInvoice[0].max_num || 0) + 1;
+
+        // Generate formatted display number
+        const YYYY = now.getFullYear().toString();
+        const MM = String(now.getMonth() + 1).padStart(2, '0');
+        const DD = String(now.getDate()).padStart(2, '0');
+        const seq = String(nextNumber).padStart(digits, '0');
+
+        const formattedNumber = pattern
+            .replace('{YYYY}', YYYY)
+            .replace('{MM}', MM)
+            .replace('{DD}', DD)
+            .replace('{seq}', seq);
+
+        // Proactive migration: Ensure formatted_number column exists
+        await sql`ALTER TABLE invoices ADD COLUMN IF NOT EXISTS formatted_number TEXT;`;
+
         await sql`
-      INSERT INTO invoices (customer_id, amount, status, date, vat_rate, vat_amount, stamp_duty, user_id)
-      VALUES (${customerId}, ${amountInMillimes}, ${status}, ${date}, ${vat_rate}, ${vatAmount}, ${stampDuty}, ${userId})
+      INSERT INTO invoices (customer_id, amount, status, date, vat_rate, vat_amount, stamp_duty, user_id, invoice_number, items, formatted_number)
+      VALUES (${customerId}, ${amountInMillimes}, ${status}, ${date}, ${vat_rate}, ${vatAmount}, ${stampDuty}, ${userId}, ${nextNumber}, ${itemsJson}, ${formattedNumber})
     `;
     } catch (error) {
         console.error(error);
-        return { message: 'Database Error: Failed to Create Invoice.' };
+        return { message: 'Erreur de base de données : Échec de la création de la facture.' };
     }
 
     revalidatePath('/dashboard/customers');
@@ -164,10 +208,11 @@ export async function updateInvoice(
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
-      message: 'Missing Fields. Failed to Update Invoice.',
+      message: 'Champs manquants. Échec de la mise à jour de la facture.',
     };
   }
 
+  const itemsJson = formData.get('items') as string;
   const { customerId, amount, status, vat_rate } = validatedFields.data;
   const amountInMillimes = Math.round(amount * 1000);
   const vatAmount = Math.round(amountInMillimes * (vat_rate / 100));
@@ -180,11 +225,12 @@ export async function updateInvoice(
     await sql`
         UPDATE invoices
         SET customer_id = ${customerId}, amount = ${amountInMillimes}, status = ${status}, 
-            vat_rate = ${vat_rate}, vat_amount = ${vatAmount}, stamp_duty = ${stampDuty}
+            vat_rate = ${vat_rate}, vat_amount = ${vatAmount}, stamp_duty = ${stampDuty},
+            items = ${itemsJson || null}
         WHERE id = ${id} AND user_id = ${userId}
       `;
   } catch (error) {
-    return { message: 'Database Error: Failed to Update Invoice.' };
+    return { message: 'Erreur de base de données : Échec de la mise à jour de la facture.' };
   }
 
   revalidatePath('/dashboard/customers');
@@ -234,7 +280,7 @@ export async function deleteCustomer(id: string) {
     revalidatePath('/dashboard/invoices'); // Customer removal affects invoice dropdown
   } catch (error) {
     console.error('Delete Customer Error:', error);
-    return { message: 'Failed to delete customer. Ensure they have no active invoices.' };
+    return { message: 'Échec de la suppression du client. Vérifiez qu\'il n\'a pas de factures actives.' };
   }
 }
 
@@ -273,7 +319,7 @@ export async function bulkImportCustomers(customers: any[]) {
     if (!userId) throw new Error('Unauthorized');
 
     if (!Array.isArray(customers) || customers.length === 0) {
-      return { success: false, message: 'No customer data provided.' };
+      return { success: false, message: 'Aucune donnée client fournie.' };
     }
 
     let successCount = 0;
@@ -329,7 +375,7 @@ export async function bulkImportCustomers(customers: any[]) {
 
   } catch (error) {
     console.error('Bulk Import API Error:', error);
-    return { success: false, message: 'Internal server error during bulk import.' };
+    return { success: false, message: 'Erreur interne du serveur lors de l\'importation.' };
   }
 }
 
@@ -383,8 +429,11 @@ export async function saveBusinessProfile(formData: FormData) {
     console.log('auth() userId:', userId);
     if (!userId) throw new Error('Unauthorized');
 
-    // Proactive migration: Ensure 'cin' column exists
+    // Proactive migration: Ensure numbering columns exist
     await sql`ALTER TABLE business_profiles ADD COLUMN IF NOT EXISTS cin TEXT;`;
+    await sql`ALTER TABLE business_profiles ADD COLUMN IF NOT EXISTS invoice_pattern TEXT DEFAULT '{seq}';`;
+    await sql`ALTER TABLE business_profiles ADD COLUMN IF NOT EXISTS invoice_digits INTEGER DEFAULT 4;`;
+    await sql`ALTER TABLE business_profiles ADD COLUMN IF NOT EXISTS invoice_reset TEXT DEFAULT 'never';`;
     
     const result = await sql`SELECT 1 FROM business_profiles WHERE user_id = ${userId}`;
     
@@ -412,7 +461,6 @@ export async function saveBusinessProfile(formData: FormData) {
           (${userId}, ${businessType}, ${businessName}, ${logoUrl || null}, ${taxId || null}, ${cin || null}, ${phone || null}, ${email || null}, ${address || null}, ${website || null})
       `;
     }
-    console.log('Database save successful');
   } catch (error: any) {
     console.error('Database Error:', error);
     return {
@@ -420,29 +468,38 @@ export async function saveBusinessProfile(formData: FormData) {
     };
   }
 
-  console.log('Revalidating paths and redirecting...');
   revalidatePath('/dashboard');
   revalidatePath('/onboarding');
   redirect('/dashboard');
 }
 
-export async function fetchBusinessProfile() {
+export async function saveNumberingSettings(formData: FormData) {
   try {
     const { userId } = await auth();
-    if (!userId) return null;
+    if (!userId) throw new Error('Unauthorized');
 
-    const profile = await sql`
-      SELECT id, user_id, business_type, business_name, logo_url, tax_id, cin, phone, email, address, website 
-      FROM business_profiles 
+    const pattern = formData.get('invoice_pattern') as string;
+    const digits = parseInt(formData.get('invoice_digits') as string);
+    const reset = formData.get('invoice_reset') as string;
+
+    await sql`
+      UPDATE business_profiles
+      SET 
+        invoice_pattern = ${pattern},
+        invoice_digits = ${digits},
+        invoice_reset = ${reset}
       WHERE user_id = ${userId}
     `;
 
-    return profile[0] || null;
-  } catch (error) {
-    console.error('Database Error:', error);
-    return null;
+    revalidatePath('/dashboard/configuration');
+    return { success: true };
+  } catch (err) {
+    console.error(err);
+    return { success: false, message: 'Failed to save numbering settings.' };
   }
 }
+
+
 
 export async function deleteAllCustomers() {
   try {
@@ -457,9 +514,9 @@ export async function deleteAllCustomers() {
     
     revalidatePath('/dashboard/customers');
     revalidatePath('/dashboard/invoices');
-    return { success: true, message: 'All customers and their invoices have been deleted.' };
+    return { success: true, message: 'Tous les clients et leurs factures ont été supprimés.' };
   } catch (error) {
     console.error('Delete All Customers Error:', error);
-    return { success: false, message: 'Failed to delete all customers.' };
+    return { success: false, message: 'Échec de la suppression de tous les clients.' };
   }
 }

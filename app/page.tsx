@@ -30,7 +30,7 @@ export default function Page() {
   }, []);
 
   return (
-    <main className={`flex min-h-screen flex-col text-white ${outfit.className} relative overflow-hidden bg-slate-950 selection:bg-tunisia-red selection:text-white`}>
+    <main className={`flex min-h-screen flex-col text-slate-900 ${outfit.className} relative overflow-hidden bg-white selection:bg-tunisia-red selection:text-white`}>
       {/* Immersive Threads Background */}
       <div className="fixed inset-0 -z-20 overflow-hidden pointer-events-none">
         <Threads 
@@ -42,17 +42,17 @@ export default function Page() {
       </div>
 
       {/* Radiant Glow Atmosphere */}
-      <div className="fixed top-[-15%] right-[-10%] w-[60%] h-[60%] bg-tunisia-red/10 blur-[150px] -z-10 rounded-full animate-slow-pulse"></div>
-      <div className="fixed bottom-[10%] left-[-15%] w-[50%] h-[50%] bg-tunisia-blue/10 blur-[150px] -z-10 rounded-full"></div>
+      <div className="fixed top-[-15%] right-[-10%] w-[60%] h-[60%] bg-tunisia-red/5 blur-[150px] -z-10 rounded-full animate-slow-pulse"></div>
+      <div className="fixed bottom-[10%] left-[-15%] w-[50%] h-[50%] bg-tunisia-blue/5 blur-[150px] -z-10 rounded-full"></div>
 
       {/* Premium Header */}
-      <header className={`fixed top-0 left-0 right-0 flex items-center justify-between px-6 py-4 md:px-16 md:py-5 z-50 transition-all duration-500 ${scrolled ? 'bg-slate-950/60 backdrop-blur-3xl border-b border-white/5 py-4' : 'bg-transparent py-8'}`}>
+      <header className={`fixed top-0 left-0 right-0 flex items-center justify-between px-6 py-4 md:px-16 md:py-5 z-50 transition-all duration-500 ${scrolled ? 'bg-white/80 backdrop-blur-3xl border-b border-slate-100 py-4 shadow-sm' : 'bg-transparent py-8'}`}>
         <div className="flex items-center gap-12">
-          <TuniBillLogo />
-          <nav className="hidden lg:flex items-center gap-8 text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">
-            <Link href="#features" className="hover:text-white transition-colors">Produit</Link>
-            <Link href="#ecosystem" className="hover:text-white transition-colors">Écosystème</Link>
-            <Link href="#security" className="hover:text-white transition-colors">Sécurité</Link>
+          <TuniBillLogo showRed={true} />
+          <nav className="hidden lg:flex items-center gap-8 text-[11px] font-black uppercase tracking-[0.2em] text-slate-500">
+            <Link href="#features" className="hover:text-tunisia-red transition-colors">Produit</Link>
+            <Link href="#ecosystem" className="hover:text-tunisia-red transition-colors">Écosystème</Link>
+            <Link href="#security" className="hover:text-tunisia-red transition-colors">Sécurité</Link>
           </nav>
         </div>
         
@@ -61,12 +61,12 @@ export default function Page() {
             <div className="flex items-center gap-4 md:gap-6">
               <Link 
                 href="/dashboard"
-                className="group flex items-center gap-3 rounded-full bg-white/5 border border-white/10 px-8 py-3 text-[10px] md:text-xs font-black uppercase tracking-[0.2em] backdrop-blur-md transition-all hover:bg-white/10 hover:shadow-2xl hover:shadow-white/5"
+                className="group flex items-center gap-3 rounded-full bg-slate-100 border border-slate-200 px-8 py-3 text-[10px] md:text-xs font-black uppercase tracking-[0.2em] backdrop-blur-md transition-all hover:bg-slate-200 hover:shadow-2xl hover:shadow-slate-200/20"
               >
                 Dashboard
                 <ArrowRightIcon className="w-4 h-4 transition-transform group-hover:translate-x-1" />
               </Link>
-              <UserButton appearance={{ elements: { userButtonAvatarBox: "w-10 h-10 border-2 border-white/10 shadow-2xl" } }} />
+              <UserButton appearance={{ elements: { userButtonAvatarBox: "w-10 h-10 border-2 border-slate-200 shadow-xl" } }} />
             </div>
           </Show>
           <Show when="signed-out">
@@ -83,14 +83,14 @@ export default function Page() {
 
       {/* Hero Section: The "Perfect" First Impression */}
       <section className="relative pt-64 pb-40 px-6 md:px-12 flex flex-col items-center text-center z-10">
-        <div className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-white/5 border border-white/10 mb-12 animate-float bg-gradient-to-r from-transparent via-white/5 to-transparent">
+        <div className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-slate-100 border border-slate-200 mb-12 animate-float">
           <SparklesIcon className="w-4 h-4 text-tunisia-red" />
-          <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-200">The Gold Standard of Tunisian Billing</span>
+          <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">The Gold Standard of Tunisian Billing</span>
         </div>
         
-        <h1 className="text-6xl md:text-8xl font-black leading-tight tracking-[-0.04em] max-w-7xl mb-12 text-center">
-          <span className="block opacity-60">L'EXCELLENCE DE</span>
-          <span className="relative inline-block text-white">
+        <h1 className="text-6xl md:text-8xl font-black leading-tight tracking-[-0.04em] max-w-7xl mb-12 text-center text-slate-900">
+          <span className="block opacity-30">L'EXCELLENCE DE</span>
+          <span className="relative inline-block">
              LA GESTION
              <svg className="absolute -bottom-6 left-0 w-full h-4 text-tunisia-red opacity-80" viewBox="0 0 400 20" preserveAspectRatio="none">
                 <path d="M0 10 Q 100 0, 200 10 T 400 10" stroke="currentColor" fill="none" strokeWidth="6" />
@@ -98,8 +98,8 @@ export default function Page() {
           </span>
         </h1>
 
-        <p className="text-lg md:text-xl text-slate-400 font-medium leading-relaxed max-w-3xl mb-16 animate-in slide-in-from-bottom-8 duration-1000">
-          Transformez votre complexité financière en un mécanisme de <span className="text-white italic">haute précision</span>. L'outil ultime pour les leaders de l'économie tunisienne.
+        <p className="text-lg md:text-xl text-slate-500 font-medium leading-relaxed max-w-3xl mb-16 animate-in slide-in-from-bottom-8 duration-1000">
+          Transformez votre complexité financière en un mécanisme de <span className="text-slate-900 italic font-black">haute précision</span>. L'outil ultime pour les leaders de l'économie tunisienne.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-6">
@@ -115,7 +115,7 @@ export default function Page() {
               <div className="absolute inset-x-0 bottom-0 h-1 bg-tunisia-red scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
             </Link>
           </Show>
-          <Link href="#features" className="px-12 py-5 bg-white/5 border border-white/10 backdrop-blur-xl rounded-[1.5rem] font-black uppercase tracking-[0.2em] hover:bg-white/10 transition-all border-b-white/20 text-sm">
+          <Link href="#features" className="px-12 py-5 bg-slate-100 border border-slate-200 rounded-[1.5rem] font-black uppercase tracking-[0.2em] hover:bg-slate-200 transition-all text-sm">
             Explore TuniBill
           </Link>
         </div>
@@ -127,8 +127,8 @@ export default function Page() {
         </div>
       </section>
 
-      {/* Partner Marquee (Social Proof) - Upgraded with High-Fidelity Emblems */}
-      <section id="ecosystem" className="py-20 border-y border-white/5 bg-slate-950/40 backdrop-blur-3xl z-10 overflow-hidden">
+      {/* Partner Marquee (Social Proof) */}
+      <section id="ecosystem" className="py-20 border-y border-slate-100 bg-slate-50/50 backdrop-blur-3xl z-10 overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 mb-12 flex items-center justify-between">
             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500">Connecting the Tunisian Tech Ecosystem</span>
             <div className="flex gap-2">
@@ -179,7 +179,7 @@ export default function Page() {
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col items-center text-center mb-32">
             <h2 className="text-xs font-black uppercase tracking-[0.5em] text-tunisia-red mb-8">Le Workflow</h2>
-            <h3 className="text-5xl md:text-8xl font-black tracking-tighter leading-none mb-10">L'Automatisation en <span className="text-white/40">Mouvement.</span></h3>
+            <h3 className="text-5xl md:text-8xl font-black tracking-tighter leading-none mb-10 text-slate-900">L'Automatisation en <span className="text-slate-200">Mouvement.</span></h3>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 relative">
@@ -209,11 +209,11 @@ export default function Page() {
                  color: "emerald-500"
                }
              ].map((item, i) => (
-               <div key={i} className="relative group p-10 rounded-[3rem] bg-slate-900/40 border border-white/5 hover:border-white/20 transition-all duration-500 backdrop-blur-xl">
-                  <div className="absolute -top-6 -left-6 w-20 h-20 rounded-full bg-slate-950 border border-white/10 flex items-center justify-center z-20 shadow-massive">
-                     <span className="text-2xl font-black text-white">{item.step}</span>
+                <div key={i} className="relative group p-10 rounded-[3rem] bg-white border border-slate-100 hover:border-tunisia-red/20 transition-all duration-500 shadow-sm hover:shadow-xl">
+                  <div className="absolute -top-6 -left-6 w-20 h-20 rounded-full bg-white border border-slate-100 flex items-center justify-center z-20 shadow-xl">
+                     <span className="text-2xl font-black text-slate-900">{item.step}</span>
                   </div>
-                  <div className={`mb-12 w-20 h-20 rounded-[2rem] bg-${item.color}/10 border border-${item.color}/20 flex items-center justify-center text-${item.color} group-hover:scale-110 transition-transform duration-500 shadow-2xl shadow-${item.color}/10`}>
+                  <div className={`mb-12 w-20 h-20 rounded-[2rem] bg-${item.color}/10 border border-${item.color}/10 flex items-center justify-center text-${item.color} group-hover:scale-110 transition-transform duration-500`}>
                     <item.icon className="w-10 h-10" />
                   </div>
                   <h4 className="text-3xl font-black mb-6">{item.title}</h4>
@@ -225,11 +225,11 @@ export default function Page() {
       </section>
 
       {/* Impact Stats Section */}
-      <section className="relative py-48 px-6 md:px-16 z-10 bg-slate-950">
+      <section className="relative py-48 px-6 md:px-16 z-10 bg-slate-50">
          <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-20">
             <div className="max-w-xl">
-               <h3 className="text-5xl md:text-7xl font-black tracking-tighter leading-none mb-10">Des Chiffres qui <br /> <span className="text-tunisia-red">Parlent.</span></h3>
-               <p className="text-slate-400 text-xl font-medium leading-relaxed">TuniBill n'est pas seulement un logiciel ; c'est un accélérateur de croissance pour l'économie tunisienne moderne.</p>
+               <h3 className="text-5xl md:text-7xl font-black tracking-tighter leading-none mb-10 text-slate-900">Des Chiffres qui <br /> <span className="text-tunisia-red">Parlent.</span></h3>
+               <p className="text-slate-500 text-xl font-medium leading-relaxed">TuniBill n'est pas seulement un logiciel ; c'est un accélérateur de croissance pour l'économie tunisienne moderne.</p>
             </div>
             
             <div className="grid grid-cols-2 gap-12 w-full max-w-2xl">
@@ -239,10 +239,10 @@ export default function Page() {
                  { label: "Gain de Temps", value: "15h", desc: "Économisées par mois" },
                  { label: "Taux d'Erreur", value: "0%", desc: "Erreurs fiscales évitées" }
                ].map((stat, i) => (
-                 <div key={i} className="group p-8 rounded-[2.5rem] bg-white/5 border border-white/10 hover:bg-white/10 transition-all">
-                    <div className="text-4xl md:text-6xl font-black text-white mb-2 group-hover:text-tunisia-red transition-colors">{stat.value}</div>
-                    <div className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 mb-4">{stat.label}</div>
-                    <div className="text-slate-400 text-xs leading-relaxed">{stat.desc}</div>
+                 <div key={i} className="group p-8 rounded-[2.5rem] bg-white border border-slate-100 hover:border-tunisia-red/20 transition-all shadow-sm">
+                    <div className="text-4xl md:text-6xl font-black text-slate-900 mb-2 group-hover:text-tunisia-red transition-colors">{stat.value}</div>
+                    <div className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mb-4">{stat.label}</div>
+                    <div className="text-slate-500 text-xs leading-relaxed">{stat.desc}</div>
                  </div>
                ))}
             </div>
@@ -260,8 +260,8 @@ export default function Page() {
 
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 auto-rows-[400px]">
             {/* Feature 1: Compliance */}
-            <div className="md:col-span-8 relative group rounded-[3rem] overflow-hidden bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 border border-white/5 p-12 transition-all duration-700 hover:border-tunisia-red/30">
-              <div className="absolute top-0 right-0 p-12 translate-x-12 translate-y-[-12] opacity-10 group-hover:opacity-20 transition-all duration-1000 scale-150 group-hover:rotate-12">
+            <div className="md:col-span-8 relative group rounded-[3rem] overflow-hidden bg-slate-50 border border-slate-100 p-12 transition-all duration-700 hover:border-tunisia-red/30">
+              <div className="absolute top-0 right-0 p-12 translate-x-12 translate-y-[-12] opacity-5 group-hover:opacity-10 transition-all duration-1000 scale-150 group-hover:rotate-12">
                 <ShieldCheckIcon className="w-[30rem] h-[30rem] text-tunisia-red" />
               </div>
               <div className="relative z-10 h-full flex flex-col max-w-lg">
@@ -273,16 +273,16 @@ export default function Page() {
                    Gestion native du Matricule Fiscal, Timbre fiscal, TVA variable, et conformité RNE. Votre bouclier administratif pour une croissance sans limites.
                 </p>
                 <div className="pt-8 flex flex-wrap gap-4">
-                   <div className="px-5 py-2 rounded-full bg-white/5 border border-white/10 text-[9px] font-black uppercase tracking-widest text-slate-300">Timbre Fiscal Auto</div>
-                   <div className="px-5 py-2 rounded-full bg-white/5 border border-white/10 text-[9px] font-black uppercase tracking-widest text-slate-300">Vérification RNE</div>
-                   <div className="px-5 py-2 rounded-full bg-white/5 border border-white/10 text-[9px] font-black uppercase tracking-widest text-slate-300">Reporting DGI</div>
+                   <div className="px-5 py-2 rounded-full bg-white border border-slate-200 text-[9px] font-black uppercase tracking-widest text-slate-500">Timbre Fiscal Auto</div>
+                   <div className="px-5 py-2 rounded-full bg-white border border-slate-200 text-[9px] font-black uppercase tracking-widest text-slate-500">Vérification RNE</div>
+                   <div className="px-5 py-2 rounded-full bg-white border border-slate-200 text-[9px] font-black uppercase tracking-widest text-slate-500">Reporting DGI</div>
                 </div>
               </div>
             </div>
 
             {/* Feature 2: Smart Cards */}
-            <div className="md:col-span-4 relative group rounded-[3rem] overflow-hidden bg-slate-900/40 backdrop-blur-md border border-white/5 p-10 flex flex-col hover:border-tunisia-blue/40 transition-all duration-500 hover:bg-slate-900/60">
-               <div className="mb-8 w-14 h-14 rounded-2xl bg-tunisia-blue/20 border border-tunisia-blue/30 flex items-center justify-center text-tunisia-blue">
+            <div className="md:col-span-4 relative group rounded-[3rem] overflow-hidden bg-white border border-slate-200 p-10 flex flex-col hover:border-tunisia-blue/40 transition-all duration-500 shadow-sm hover:shadow-xl">
+               <div className="mb-8 w-14 h-14 rounded-2xl bg-tunisia-blue/10 border border-tunisia-blue/10 flex items-center justify-center text-tunisia-blue">
                  <ChartBarIcon className="w-8 h-8" />
                </div>
                <h4 className="text-2xl font-black mb-4">Vision Stratégique</h4>
@@ -301,38 +301,38 @@ export default function Page() {
             </div>
 
             {/* Feature 3: Security */}
-            <div id="security" className="md:col-span-4 relative group rounded-[3rem] overflow-hidden bg-slate-950 border border-white/5 p-10 flex flex-col hover:border-emerald-500/30 transition-all duration-500">
+            <div id="security" className="md:col-span-4 relative group rounded-[3rem] overflow-hidden bg-slate-50 border border-slate-100 p-10 flex flex-col hover:border-emerald-500/30 transition-all duration-500 shadow-sm hover:shadow-xl">
                <div className="absolute inset-x-0 top-0 h-[100px] bg-gradient-to-b from-emerald-500/5 to-transparent pointer-events-none"></div>
-               <div className="mb-8 w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+               <div className="mb-8 w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/10 flex items-center justify-center text-emerald-600">
                  <FingerPrintIcon className="w-8 h-8" />
                </div>
-               <h4 className="text-2xl font-black mb-4">Coffre-fort Numérique</h4>
+               <h4 className="text-2xl font-black mb-4 text-slate-900">Coffre-fort Numérique</h4>
                <p className="text-slate-500 text-sm leading-relaxed">Chiffrement AES-256 et isolation hermétique de chaque instance client. La sécurité des données est notre priorité absolue.</p>
             </div>
 
-            {/* Feature 4: TuniBill Pulse (Creative Replacement) */}
-            <div className="md:col-span-8 relative group rounded-[3rem] overflow-hidden bg-gradient-to-tr from-slate-950 via-slate-900 to-slate-950 border border-white/5 p-12 transition-all duration-500 hover:border-tunisia-red/20 shadow-2xl">
+            {/* Feature 4: TuniBill Pulse */}
+            <div className="md:col-span-8 relative group rounded-[3rem] overflow-hidden bg-white border border-slate-200 p-12 transition-all duration-500 hover:border-tunisia-red/20 shadow-xl">
                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center h-full">
                   <div className="relative z-10">
-                    <div className="mb-8 w-14 h-14 rounded-2xl bg-tunisia-red/10 border border-tunisia-red/20 flex items-center justify-center text-tunisia-red animate-pulse">
+                    <div className="mb-8 w-14 h-14 rounded-2xl bg-tunisia-red/5 border border-tunisia-red/10 flex items-center justify-center text-tunisia-red animate-pulse">
                       <SparklesIcon className="w-8 h-8" />
                     </div>
-                    <h4 className="text-3xl font-black mb-4 tracking-tight">TuniBill <span className="text-tunisia-red italic">Pulse</span></h4>
+                    <h4 className="text-3xl font-black mb-4 tracking-tight text-slate-900">TuniBill <span className="text-tunisia-red italic">Pulse</span></h4>
                     <p className="text-slate-500 text-md leading-relaxed">Anticipez l'avenir avec notre moteur de prédiction. TuniBill analyse vos cycles de paiement pour projeter votre santé financière à 90 jours.</p>
                   </div>
                   
                   <div className="relative flex items-center justify-center group/pulse">
-                     <div className="absolute inset-0 bg-tunisia-red/5 blur-[80px] rounded-full group-hover/pulse:bg-tunisia-red/10 transition-all"></div>
-                     <div className="relative w-full aspect-square max-w-[280px] bg-slate-950 rounded-full border border-white/5 flex items-center justify-center p-8 overflow-hidden glass-card shadow-massive transform group-hover/pulse:scale-105 transition-transform duration-700">
+                     <div className="absolute inset-0 bg-tunisia-red/[0.03] blur-[80px] rounded-full group-hover/pulse:bg-tunisia-red/5 transition-all"></div>
+                     <div className="relative w-full aspect-square max-w-[280px] bg-white rounded-full border border-slate-100 flex items-center justify-center p-8 overflow-hidden shadow-2xl transform group-hover/pulse:scale-105 transition-transform duration-700">
                         {/* Recursive Circles Visualization */}
-                        <div className="absolute inset-0 flex items-center justify-center opacity-20">
-                           <div className="w-[120%] h-[120%] border border-dashed border-white/20 rounded-full animate-spin-slow"></div>
-                           <div className="absolute w-[80%] h-[80%] border border-slate-800 rounded-full"></div>
+                        <div className="absolute inset-0 flex items-center justify-center opacity-40">
+                           <div className="w-[120%] h-[120%] border border-dashed border-slate-200 rounded-full animate-spin-slow"></div>
+                           <div className="absolute w-[80%] h-[80%] border border-slate-50 rounded-full"></div>
                         </div>
                         <div className="text-center relative z-10">
-                           <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 mb-2">Score de Santé</p>
-                           <p className="text-6xl font-black text-white">98.4</p>
-                           <div className="mt-4 flex items-center gap-2 justify-center text-emerald-400 font-bold text-xs">
+                           <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mb-2">Score de Santé</p>
+                           <p className="text-6xl font-black text-slate-900">98.4</p>
+                           <div className="mt-4 flex items-center gap-2 justify-center text-emerald-500 font-bold text-xs">
                               <ArrowRightIcon className="w-3 h-3 -rotate-45" />
                               <span>+12.5%</span>
                            </div>
@@ -370,16 +370,16 @@ export default function Page() {
                    image: "https://avatar.vercel.sh/sami"
                  }
                ].map((t, i) => (
-                 <div key={i} className="group relative p-10 rounded-[3rem] bg-slate-900 border border-white/5 hover:border-tunisia-red/30 transition-all duration-500 transform hover:-translate-y-4">
+                 <div key={i} className="group relative p-10 rounded-[3rem] bg-white border border-slate-100 hover:border-tunisia-red/30 transition-all duration-500 transform hover:-translate-y-4 shadow-sm hover:shadow-xl">
                     <div className="mb-8 flex items-center gap-4">
-                       <img src={t.image} alt={t.name} className="w-14 h-14 rounded-2xl border-2 border-white/10" />
+                       <img src={t.image} alt={t.name} className="w-14 h-14 rounded-2xl border-2 border-slate-100" />
                        <div>
-                          <p className="font-black text-white">{t.name}</p>
-                          <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest">{t.role}</p>
+                          <p className="font-black text-slate-900">{t.name}</p>
+                          <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest">{t.role}</p>
                        </div>
                     </div>
-                    <p className="text-slate-400 text-lg italic leading-relaxed">"{t.quote}"</p>
-                    <div className="absolute top-8 right-8 text-white/5 text-8xl font-black select-none pointer-events-none">"</div>
+                    <p className="text-slate-500 text-lg italic leading-relaxed">"{t.quote}"</p>
+                    <div className="absolute top-8 right-8 text-slate-100 text-8xl font-black select-none pointer-events-none">"</div>
                  </div>
                ))}
             </div>
@@ -392,12 +392,12 @@ export default function Page() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-tunisia-red/5 blur-[160px] rounded-full pointer-events-none"></div>
         
         <div className="relative z-10 max-w-4xl">
-           <h2 className="text-5xl md:text-8xl font-black mb-12 tracking-[-0.04em] leading-none">
+           <h2 className="text-5xl md:text-8xl font-black mb-12 tracking-[-0.04em] leading-none text-slate-900">
              PASSEZ À <br /> 
-             <span className="text-white/20 italic tracking-tighter">VITESSE TUNIBILL.</span>
+             <span className="text-slate-100 italic tracking-tighter">VITESSE TUNIBILL.</span>
            </h2>
            
-           <p className="text-slate-400 text-lg md:text-xl mb-16 max-w-2xl mx-auto font-medium leading-relaxed">
+           <p className="text-slate-500 text-lg md:text-xl mb-16 max-w-2xl mx-auto font-medium leading-relaxed">
              Rejoignez l'élite des innovateurs qui ont déjà simplifié leur destin financier avec notre plateforme.
            </p>
            
@@ -412,14 +412,14 @@ export default function Page() {
                   <span className="relative z-10">Aller au Tableau de Bord</span>
                </Link>
              </Show>
-             <Link href="/contact" className="px-16 py-6 bg-white/5 border border-white/10 text-white rounded-[2rem] font-black uppercase tracking-[0.4em] text-[10px] hover:bg-white/10 transition-all backdrop-blur-3xl">
+             <Link href="/contact" className="px-16 py-6 bg-slate-100 border border-slate-200 text-slate-900 rounded-[2rem] font-black uppercase tracking-[0.4em] text-[10px] hover:bg-slate-200 transition-all backdrop-blur-3xl">
                Contact Business
              </Link>
            </div>
         </div>
       </section>
 
-      <Footer className="bg-slate-950 border-t border-white/5" />
+      <Footer className="bg-white border-t border-slate-100" />
 
       <style jsx global>{`
         @keyframes spin-slow {

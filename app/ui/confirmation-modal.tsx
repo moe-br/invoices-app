@@ -21,8 +21,8 @@ export default function ConfirmationModal({
   onConfirm,
   title,
   message,
-  confirmLabel = 'Confirm',
-  cancelLabel = 'Cancel',
+  confirmLabel = 'Confirmer',
+  cancelLabel = 'Annuler',
   variant = 'danger',
 }: ConfirmationModalProps) {
   const [isRendered, setIsRendered] = useState(false);
@@ -57,15 +57,15 @@ export default function ConfirmationModal({
             <div className={`p-3 rounded-2xl ${variant === 'danger' ? 'bg-rose-500/10 text-rose-500' : 'bg-orange-500/10 text-orange-500'}`}>
               <ExclamationTriangleIcon className="w-6 h-6" />
             </div>
-            <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
+            <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-900  transition-colors">
               <XMarkIcon className="w-5 h-5" />
             </button>
           </div>
 
-          <h3 className="text-xl font-black text-slate-900 dark:text-white mb-2 tracking-tight">
+          <h3 className="text-xl font-black text-slate-900  mb-2 tracking-tight">
             {title}
           </h3>
-          <p className="text-sm font-bold text-slate-500 dark:text-slate-400 leading-relaxed mb-8">
+          <p className="text-sm font-bold text-slate-500  leading-relaxed mb-8">
             {message}
           </p>
 
@@ -85,7 +85,7 @@ export default function ConfirmationModal({
             </button>
             <button
               onClick={onClose}
-              className="w-full py-4 text-xs font-black uppercase tracking-[0.2em] text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+              className="w-full py-4 text-xs font-black uppercase tracking-[0.2em] text-slate-400 hover:text-slate-900  transition-colors"
             >
               {cancelLabel}
             </button>

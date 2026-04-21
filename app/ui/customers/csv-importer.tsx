@@ -82,11 +82,11 @@ export default function CsvImporter() {
   };
 
   return (
-    <div className="w-full bg-white dark:bg-slate-900 shadow-sm border border-slate-200 dark:border-slate-800 rounded-2xl p-6 mb-8 transition-colors">
+    <div className="w-full bg-white  shadow-sm border border-slate-200  rounded-2xl p-6 mb-8 transition-colors">
       <div className="flex flex-col gap-2 mb-4">
-        <h2 className="text-xl font-bold tracking-tight text-slate-800 dark:text-white">Bulk CSV Import</h2>
-        <p className="text-sm text-slate-500 dark:text-slate-400">
-          Effortlessly sync your external database by uploading a single dataset. Ensure your CSV has columns like <code className="bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded">name</code> and <code className="bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded">email</code>.
+        <h2 className="text-xl font-bold tracking-tight text-slate-800 ">Bulk CSV Import</h2>
+        <p className="text-sm text-slate-500 ">
+          Effortlessly sync your external database by uploading a single dataset. Ensure your CSV has columns like <code className="bg-slate-100  px-1 py-0.5 rounded">name</code> and <code className="bg-slate-100  px-1 py-0.5 rounded">email</code>.
         </p>
       </div>
 
@@ -95,7 +95,7 @@ export default function CsvImporter() {
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         onClick={() => !file && fileInputRef.current?.click()}
-        className={`w-full relative overflow-hidden border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center gap-4 transition-all duration-300 ${isHovering ? 'border-tunisia-red bg-rose-50 dark:bg-tunisia-red/10' : file ? 'border-emerald-400 bg-emerald-50 dark:bg-emerald-950/20' : 'border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950/50 hover:bg-slate-100 dark:hover:bg-slate-900'} ${!file ? 'cursor-pointer' : ''}`}
+        className={`w-full relative overflow-hidden border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center gap-4 transition-all duration-300 ${isHovering ? 'border-tunisia-red bg-rose-50' : file ? 'border-emerald-400 bg-emerald-50' : 'border-slate-300 bg-slate-50 hover:bg-slate-100'} ${!file ? 'cursor-pointer' : ''}`}
       >
         <input 
           type="file" 
@@ -107,29 +107,29 @@ export default function CsvImporter() {
         
         {!file ? (
           <>
-            <div className="w-16 h-16 rounded-full bg-white dark:bg-slate-800 shadow-sm flex items-center justify-center text-slate-400">
+            <div className="w-16 h-16 rounded-full bg-white  shadow-sm flex items-center justify-center text-slate-400">
               <ArrowDownTrayIcon className="w-8 h-8" />
             </div>
             <div className="text-center">
-              <p className="font-semibold text-slate-700 dark:text-slate-300">Choose a CSV file or drag it here</p>
+              <p className="font-semibold text-slate-700 ">Choose a CSV file or drag it here</p>
               <p className="text-xs font-medium text-slate-400 mt-1 uppercase tracking-wider">Up to 5MB</p>
             </div>
           </>
         ) : (
-          <div className="flex w-full items-center justify-between bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-900/50 p-4 rounded-xl shadow-sm z-10">
+          <div className="flex w-full items-center justify-between bg-white  border border-emerald-200  p-4 rounded-xl shadow-sm z-10">
             <div className="flex items-center gap-4">
-              <div className="p-3 bg-emerald-100 dark:bg-emerald-900 text-emerald-600 dark:text-emerald-400 rounded-lg">
+              <div className="p-3 bg-emerald-100  text-emerald-600  rounded-lg">
                 <DocumentTextIcon className="w-6 h-6" />
               </div>
               <div className="flex flex-col text-left">
-                <span className="font-bold text-slate-800 dark:text-slate-200 text-sm truncate max-w-[200px] md:max-w-xs">{file.name}</span>
+                <span className="font-bold text-slate-800  text-sm truncate max-w-[200px] md:max-w-xs">{file.name}</span>
                 <span className="text-xs text-slate-500">{(file.size / 1024).toFixed(1)} KB</span>
               </div>
             </div>
             
             <button 
               onClick={(e) => { e.stopPropagation(); setFile(null); }}
-              className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950 rounded-full transition-colors"
+              className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50  rounded-full transition-colors"
             >
               <XMarkIcon className="w-5 h-5" />
             </button>
@@ -138,7 +138,7 @@ export default function CsvImporter() {
       </div>
 
       {message && (
-        <div className={`mt-4 p-4 rounded-xl border ${message.type === 'error' ? 'bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-900 text-red-600 dark:text-red-400' : 'bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-900 text-emerald-600 dark:text-emerald-400'}`}>
+        <div className={`mt-4 p-4 rounded-xl border ${message.type === 'error' ? 'bg-red-50 border-red-200 text-red-600' : 'bg-emerald-50 border-emerald-200 text-emerald-600'}`}>
           <p className="text-sm font-medium">{message.text}</p>
         </div>
       )}

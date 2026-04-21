@@ -17,7 +17,7 @@ export default function CreateCustomerForm() {
 
   return (
     <form action={dispatch} className="space-y-6">
-      <div className="glass-card p-8 border-white/20 dark:border-white/5 space-y-8">
+      <div className="glass-card p-8 border-white/20  space-y-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Name */}
           <div className="space-y-2">
@@ -30,7 +30,7 @@ export default function CreateCustomerForm() {
                 name="name"
                 type="text"
                 placeholder="Enter client name"
-                className="peer block w-full rounded-2xl border-none bg-slate-50 dark:bg-slate-900/50 py-4 pl-12 text-sm font-bold text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-tunisia-red transition-all"
+                className="peer block w-full rounded-2xl border-none bg-slate-50  py-4 pl-12 text-sm font-bold text-slate-900  placeholder:text-slate-400 focus:ring-2 focus:ring-tunisia-red transition-all"
                 required
               />
               <UserIcon className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400 peer-focus:text-tunisia-red" />
@@ -51,7 +51,7 @@ export default function CreateCustomerForm() {
                 name="email"
                 type="email"
                 placeholder="Enter email address"
-                className="peer block w-full rounded-2xl border-none bg-slate-50 dark:bg-slate-900/50 py-4 pl-12 text-sm font-bold text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-tunisia-red transition-all"
+                className="peer block w-full rounded-2xl border-none bg-slate-50  py-4 pl-12 text-sm font-bold text-slate-900  placeholder:text-slate-400 focus:ring-2 focus:ring-tunisia-red transition-all"
                 required
               />
               <EnvelopeIcon className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400 peer-focus:text-tunisia-red" />
@@ -72,7 +72,7 @@ export default function CreateCustomerForm() {
                 name="phone"
                 type="text"
                 placeholder="Enter phone number"
-                className="peer block w-full rounded-2xl border-none bg-slate-50 dark:bg-slate-900/50 py-4 pl-12 text-sm font-bold text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-tunisia-red transition-all"
+                className="peer block w-full rounded-2xl border-none bg-slate-50  py-4 pl-12 text-sm font-bold text-slate-900  placeholder:text-slate-400 focus:ring-2 focus:ring-tunisia-red transition-all"
               />
               <PhoneIcon className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400 peer-focus:text-tunisia-red" />
             </div>
@@ -89,7 +89,7 @@ export default function CreateCustomerForm() {
                 name="tax_id"
                 type="text"
                 placeholder="Enter Tax ID"
-                className="peer block w-full rounded-2xl border-none bg-slate-50 dark:bg-slate-900/50 py-4 pl-12 text-sm font-bold text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-tunisia-red transition-all"
+                className="peer block w-full rounded-2xl border-none bg-slate-50  py-4 pl-12 text-sm font-bold text-slate-900  placeholder:text-slate-400 focus:ring-2 focus:ring-tunisia-red transition-all"
               />
               <IdentificationIcon className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400 peer-focus:text-tunisia-red" />
             </div>
@@ -107,7 +107,7 @@ export default function CreateCustomerForm() {
               name="address"
               type="text"
               placeholder="Enter full address"
-              className="peer block w-full rounded-2xl border-none bg-slate-50 dark:bg-slate-900/50 py-4 pl-12 text-sm font-bold text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-tunisia-red transition-all"
+              className="peer block w-full rounded-2xl border-none bg-slate-50  py-4 pl-12 text-sm font-bold text-slate-900  placeholder:text-slate-400 focus:ring-2 focus:ring-tunisia-red transition-all"
             />
             <MapPinIcon className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400 peer-focus:text-tunisia-red" />
           </div>
@@ -117,7 +117,7 @@ export default function CreateCustomerForm() {
       <div className="flex justify-end gap-4">
         <Link
           href="/dashboard/customers"
-          className="flex h-12 items-center rounded-2xl bg-slate-100 dark:bg-slate-900 px-8 text-sm font-black uppercase tracking-widest text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 transition-all active:scale-95"
+          className="flex h-12 items-center rounded-2xl bg-slate-100  px-8 text-sm font-black uppercase tracking-widest text-slate-600  hover:bg-slate-200  transition-all active:scale-95"
         >
           Cancel
         </Link>

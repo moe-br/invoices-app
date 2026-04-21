@@ -7,11 +7,14 @@ import {
   TrashIcon, 
   EyeIcon, 
   MagnifyingGlassIcon,
+  ChevronRightIcon,
+  FunnelIcon
 } from '@heroicons/react/24/outline';
 import { useState } from 'react';
 import { markInvoiceAsPaid, deleteInvoice } from '@/app/lib/actions';
 import Link from 'next/link';
 import ConfirmationModal from '@/app/ui/confirmation-modal';
+import clsx from 'clsx';
 
 export default function FinancialOperations({ 
   invoices 
@@ -24,15 +27,11 @@ export default function FinancialOperations({
 
   const filteredInvoices = invoices.filter(invoice => 
     invoice.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    invoice.id.toString().toLowerCase().includes(searchTerm.toLowerCase())
+    (invoice.formatted_number && invoice.formatted_number.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
-  // Helper to format invoice number Fac_001, Fac_002, etc.
-  // We'll use a slice of the ID or a padded version of the list index if we want it to be "001"
-  // Let's use the ID to keep it unique but format it as Fac_XXXX
   const formatInvoiceId = (id: string | number) => {
     const rawId = id.toString();
-    // If it's a numeric ID, pad it. If it's a UUID/Hash, take a slice.
     if(/^\d+$/.test(rawId)) {
         return `Fac_${rawId.padStart(3, '0')}`;
     }
@@ -40,118 +39,124 @@ export default function FinancialOperations({
   };
 
   return (
-    <div className={`${outfit.className} bg-slate-50 dark:bg-slate-900/50 rounded-[2.5rem] border border-slate-200 dark:border-white/5 p-8 h-full flex flex-col transition-all duration-500`}>
-      {/* Header Area */}
-      <div className="flex items-center justify-between mb-8">
+    <div className={`${outfit.className} bg-white rounded-[2rem] border border-slate-100 p-6 h-full flex flex-col transition-all duration-500 shadow-sm shadow-slate-100/50`}>
+      {/* Premium Header Area */}
+      <div className="flex flex-col xl:flex-row xl:items-center justify-between mb-8 gap-6">
         <div>
-          <h2 className="text-xl font-black text-slate-900 dark:text-white mb-1">Financial Operations</h2>
-          <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Manage client billing and invoices.</p>
+           <div className="flex items-center gap-2 mb-1.5 opacity-60">
+              <div className="w-1 h-1 rounded-full bg-tunisia-red"></div>
+              <h2 className="text-[9px] font-black text-slate-400 uppercase tracking-[0.4em]">Operations List</h2>
+           </div>
+           <h3 className="text-2xl font-black text-slate-950 tracking-tight leading-none">Hub Financier</h3>
         </div>
         
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-3">
           <div className="relative group">
-            <MagnifyingGlassIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-500 group-focus-within:text-tunisia-red transition-all duration-300" />
+            <MagnifyingGlassIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-300 group-focus-within:text-tunisia-red transition-all duration-300" />
             <input 
               type="text" 
-              placeholder="Search invoices..."
-              className="bg-white dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 rounded-xl py-2.5 pl-11 pr-4 text-xs text-slate-900 dark:text-white outline-none focus:border-tunisia-red/50 transition-all duration-300 w-64 shadow-sm dark:shadow-none"
+              placeholder="Rechercher une opération..."
+              className="bg-slate-50/50 border border-slate-100 rounded-xl py-2.5 pl-10 pr-5 text-[11px] font-bold text-slate-900 outline-none focus:border-tunisia-red/30 focus:bg-white transition-all duration-300 w-full sm:w-64"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <div className="px-3 py-1.5 bg-white dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-lg text-[10px] font-black text-slate-500 dark:text-slate-400 shadow-sm dark:shadow-none transition-all">
-            {filteredInvoices.length} of {invoices.length}
-          </div>
+          <button className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-100 rounded-xl text-[9px] font-black text-slate-400 hover:text-slate-900 hover:shadow-sm transition-all active:scale-95">
+             <FunnelIcon className="w-3.5 h-3.5" />
+             <span>FILTRER</span>
+          </button>
         </div>
       </div>
 
-      {/* Table Header */}
-      <div className="grid grid-cols-12 gap-4 px-4 py-3 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 border-b border-slate-200 dark:border-white/5 mb-2 transition-all">
-        <div className="col-span-2">Invoice Info</div>
-        <div className="col-span-2 text-center">Client</div>
-        <div className="col-span-1 text-center">Date</div>
-        <div className="col-span-2 text-center">Amount</div>
-        <div className="col-span-2 text-center">Status</div>
-        <div className="col-span-3 text-right pr-4">Control</div>
-      </div>
-
-      {/* Invoice List */}
-      <div className="flex-1 overflow-y-auto space-y-1 pr-2 custom-scrollbar">
-        {filteredInvoices.map((invoice) => (
-          <div key={invoice.id} className="grid grid-cols-12 gap-4 items-center px-4 py-4 rounded-2xl hover:bg-slate-100 dark:hover:bg-white/5 transition-all duration-300 group border border-transparent hover:border-slate-200 dark:hover:border-white/5">
-            {/* Invoice Info */}
-            <div className="col-span-2">
-              <span className="text-[10px] font-black text-tunisia-red uppercase tracking-wider block mb-0.5 transition-colors group-hover:text-tunisia-red">
-                {formatInvoiceId(invoice.id)}
-              </span>
-              <span className="text-sm font-bold text-slate-900 dark:text-white block truncate transition-colors group-hover:translate-x-1 duration-300">
-                {invoice.name || 'Untitled Invoice'}
-              </span>
-            </div>
-
-            {/* Client */}
-            <div className="col-span-2 text-center px-1">
-              <span className="text-xs font-bold text-slate-600 dark:text-slate-300 truncate block">{invoice.name}</span>
-            </div>
-
-            {/* Date */}
-            <div className="col-span-1 text-center text-[10px] font-bold text-slate-500 dark:text-slate-400 whitespace-nowrap">
-               {formatDateToLocal(invoice.date)}
-            </div>
-
-            {/* Amount */}
-            <div className="col-span-2 text-center px-1">
-              <span className="text-sm font-black text-slate-900 dark:text-white truncate block">{formatCurrency(invoice.amount)}</span>
-            </div>
-
-            {/* Status */}
-            <div className="col-span-2 flex justify-center">
-              <span className={`px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-widest transition-all duration-300 ${
-                invoice.status === 'paid' 
-                ? 'bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20 shadow-sm shadow-green-500/10' 
-                : 'bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20 shadow-sm shadow-orange-500/10'
-              }`}>
-                {invoice.status}
-              </span>
-            </div>
-
-            {/* Actions */}
-            <div className="col-span-3 flex justify-end items-center gap-2 pr-2">
-              <Link 
-                href={`/dashboard/invoices/${invoice.id}/view`}
-                className="flex items-center justify-center w-9 h-9 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-900 transition-all shadow-sm dark:shadow-none active:scale-90"
-                title="View Invoice"
-              >
-                <EyeIcon className="w-4.5 h-4.5" />
-              </Link>
-              
-              {invoice.status !== 'paid' ? (
-                <button 
-                  onClick={() => markInvoiceAsPaid(invoice.id)}
-                  className="h-9 px-4 bg-green-500 text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-green-600 transition-all shadow-xl shadow-green-500/20 active:scale-90 flex items-center justify-center gap-1.5 group/btn whitespace-nowrap min-w-[95px]"
-                >
-                  <CheckIcon className="w-3.5 h-3.5 transition-transform group-hover/btn:scale-110" />
-                  Mark Paid
-                </button>
-              ) : (
-                <div className="flex items-center justify-center w-9 h-9 bg-green-500/10 border border-green-500/20 text-green-600 rounded-xl transition-all animate-in zoom-in-50 duration-500">
-                  <CheckIcon className="w-4.5 h-4.5" />
+      {/* Operations Feed */}
+      <div className="flex-1 overflow-y-auto space-y-4 pr-2 custom-scrollbar">
+        {filteredInvoices.length > 0 ? (
+          filteredInvoices.map((invoice) => (
+            <div key={invoice.id} className="relative group p-5 rounded-2xl bg-white border border-slate-100 hover:border-tunisia-red/10 transition-all duration-500 hover:shadow-xl hover:shadow-slate-100/50">
+              <div className="flex flex-col sm:flex-row items-center gap-5">
+                
+                {/* Visual Anchor */}
+                <div className={clsx(
+                  "w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border transition-all duration-500 group-hover:scale-105 shadow-sm",
+                  invoice.status === 'paid' 
+                    ? "bg-emerald-50 border-emerald-100 text-emerald-500 group-hover:bg-emerald-500 group-hover:border-emerald-500 group-hover:text-white"
+                    : "bg-amber-50 border-amber-100 text-amber-500 group-hover:bg-amber-500 group-hover:border-amber-500 group-hover:text-white"
+                )}>
+                   {invoice.status === 'paid' ? <CheckIcon className="w-6 h-6" /> : <EyeIcon className="w-6 h-6" />}
                 </div>
-              )}
 
-              <button 
-                onClick={() => {
-                  setSelectedInvoiceId(invoice.id);
-                  setModalOpen(true);
-                }}
-                className="flex items-center justify-center w-9 h-9 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-400 hover:text-rose-500 hover:bg-rose-50 transition-all shadow-sm dark:shadow-none active:scale-90"
-                title="Delete Invoice"
-              >
-                <TrashIcon className="w-4.5 h-4.5" />
-              </button>
+                {/* Primary Info */}
+                <div className="flex-1 min-w-0">
+                   <div className="flex items-center gap-2 mb-1">
+                      <span className="text-[8px] font-black text-tunisia-red bg-tunisia-red/5 px-2 py-0.5 rounded-full border border-tunisia-red/10 uppercase tracking-widest opacity-80">
+                        {invoice.formatted_number || formatInvoiceId(invoice.invoice_number || invoice.id)}
+                      </span>
+                      <span className="text-[8px] font-black text-slate-400 italic">
+                        {formatDateToLocal(invoice.date)}
+                      </span>
+                   </div>
+                   <h4 className="text-base font-black text-slate-900 truncate leading-tight transition-colors group-hover:text-tunisia-red">
+                     {invoice.name || 'Client Anonyme'}
+                   </h4>
+                   <p className="text-[9px] font-bold text-slate-400 mt-0.5 truncate tracking-wide opacity-60">
+                     {invoice.email || 'Aucun contact Email'}
+                   </p>
+                </div>
+
+                {/* Financial Summary */}
+                <div className="text-center sm:text-right px-4 border-l border-slate-50 sm:border-r">
+                   <p className="text-xl font-black text-slate-900 tracking-tight">
+                     {formatCurrency(invoice.amount)}
+                   </p>
+                   <p className={clsx(
+                     "text-[8px] font-black uppercase tracking-[0.2em] mt-0.5 opacity-80",
+                     invoice.status === 'paid' ? "text-emerald-500" : "text-amber-500"
+                   )}>
+                     {invoice.status === 'paid' ? 'Soldée' : 'En attente'}
+                   </p>
+                </div>
+
+                {/* Actions Hub */}
+                <div className="flex items-center gap-2.5">
+                  <Link 
+                    href={`/dashboard/invoices/${invoice.id}/view`}
+                    className="flex items-center justify-center w-10 h-10 bg-slate-900 rounded-xl text-white hover:bg-slate-800 transition-all shadow-md shadow-slate-900/10 active:scale-95"
+                    title="Détails"
+                  >
+                    <EyeIcon className="w-4 h-4" />
+                  </Link>
+                  
+                  {invoice.status !== 'paid' && (
+                    <button 
+                      onClick={() => markInvoiceAsPaid(invoice.id)}
+                      className="group/pay h-10 px-5 bg-emerald-500 text-white rounded-xl text-[8px] font-black uppercase tracking-[0.3em] hover:bg-emerald-600 transition-all shadow-md shadow-emerald-500/10 active:scale-95 flex items-center justify-center gap-2"
+                    >
+                      <CheckIcon className="w-3.5 h-3.5 transition-transform group-hover/pay:scale-110" />
+                      PAYER
+                    </button>
+                  )}
+
+                  <button 
+                    onClick={() => {
+                      setSelectedInvoiceId(invoice.id);
+                      setModalOpen(true);
+                    }}
+                    className="flex items-center justify-center w-10 h-10 bg-white border border-slate-100 rounded-xl text-slate-300 hover:text-tunisia-red hover:border-tunisia-red/20 transition-all hover:bg-tunisia-red/5 active:scale-95"
+                    title="Supprimer"
+                  >
+                    <TrashIcon className="w-4 h-4" />
+                  </button>
+                </div>
+
+              </div>
             </div>
+          ))
+        ) : (
+          <div className="flex flex-col items-center justify-center py-32 text-center opacity-40">
+             <MagnifyingGlassIcon className="w-16 h-16 mb-6 text-slate-200" />
+             <p className="text-sm font-black text-slate-400 uppercase tracking-[0.2em]">Aucune opération trouvée</p>
           </div>
-        ))}
+        )}
       </div>
 
       <ConfirmationModal
@@ -163,17 +168,18 @@ export default function FinancialOperations({
             setSelectedInvoiceId(null);
           }
         }}
-        title="Delete Invoice?"
-        message="This action cannot be undone. All data associated with this invoice will be permanently removed."
-        confirmLabel="Delete Invoice"
-        cancelLabel="Keep Invoice"
+        title="Supprimer l'opération ?"
+        message="Cette action est définitive. L'historique financier associé sera effacé de nos registres de sécurité."
+        confirmLabel="Finaliser la Suppression"
+        cancelLabel="Annuler"
       />
 
       <style jsx>{`
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.05); border-radius: 10px; }
-        .dark .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.05); }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #f1f5f9; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #e2e8f0; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
       `}</style>
     </div>
   );

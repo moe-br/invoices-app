@@ -151,8 +151,8 @@ export default function DataImportCenter() {
     <div className={`${outfit.className} space-y-8`}>
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm font-bold text-slate-900 dark:text-white mb-1">
-            Data Synchronisation & Import
+          <p className="text-sm font-bold text-slate-900  mb-1">
+            Synchronisation & Import des Données
           </p>
           <p className="text-[10px] text-slate-500 uppercase tracking-widest">
             Support natif JSON, Excel (.xlsx) et CSV
@@ -180,8 +180,8 @@ export default function DataImportCenter() {
           onDrop={handleDrop}
           onClick={() => fileInputRef.current?.click()}
           className={`relative group cursor-pointer border-2 border-dashed rounded-[2.5rem] p-10 transition-all duration-500 flex flex-col items-center justify-center text-center gap-6 ${dragActive
-            ? 'border-tunisia-red bg-rose-50 dark:bg-tunisia-red/5 scale-[0.98] shadow-2xl shadow-tunisia-red/10'
-            : 'border-slate-200 dark:border-white/5 bg-slate-50/50 dark:bg-white/5 hover:border-slate-400 dark:hover:border-white/20'
+            ? 'border-tunisia-red bg-rose-50 scale-[0.98] shadow-2xl shadow-tunisia-red/10'
+            : 'border-slate-200 bg-slate-50/50 hover:border-slate-400'
             }`}
         >
           <input
@@ -192,7 +192,7 @@ export default function DataImportCenter() {
             onChange={handleFileChange}
           />
 
-          <div className="w-20 h-20 rounded-3xl bg-white dark:bg-slate-900 shadow-xl group-hover:shadow-2xl transition-all duration-500 flex items-center justify-center text-slate-400 group-hover:text-tunisia-red group-hover:scale-110">
+          <div className="w-20 h-20 rounded-3xl bg-white  shadow-xl group-hover:shadow-2xl transition-all duration-500 flex items-center justify-center text-slate-400 group-hover:text-tunisia-red group-hover:scale-110">
             {file ? (
               <DocumentChartBarIcon className="w-10 h-10 text-emerald-500" />
             ) : (
@@ -201,16 +201,16 @@ export default function DataImportCenter() {
           </div>
 
           <div className="space-y-2">
-            <p className="text-base font-black text-slate-900 dark:text-white">
+            <p className="text-base font-black text-slate-900 ">
               {file ? file.name : 'Déposez vos fichiers ici'}
             </p>
             <p className="text-[11px] text-slate-400 font-bold uppercase tracking-[0.2em]">
-              {file ? `${(file.size / 1024).toFixed(1)} KB` : 'JSON, Excel ou CSV (Max 10MB)'}
+              {file ? `${(file.size / 1024).toFixed(1)} Ko` : 'JSON, Excel ou CSV (Max 10Mo)'}
             </p>
           </div>
 
           {!file && (
-            <div className="px-8 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full text-[10px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-400 shadow-sm opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300">
+            <div className="px-8 py-2.5 bg-white  border border-slate-200  rounded-full text-[10px] font-black uppercase tracking-widest text-slate-600  shadow-sm opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300">
               Parcourir les fichiers
             </div>
           )}
@@ -226,12 +226,12 @@ export default function DataImportCenter() {
         </div>
 
         {/* Sync Zone */}
-        <div className="flex flex-col gap-6 justify-between p-10 rounded-[2.5rem] bg-slate-50/50 dark:bg-white/5 border border-slate-200 dark:border-white/5 relative overflow-hidden">
+        <div className="flex flex-col gap-6 justify-between p-10 rounded-[2.5rem] bg-slate-50/50  border border-slate-200  relative overflow-hidden">
           {/* Decorative Glow */}
           <div className="absolute -top-24 -right-24 w-48 h-48 bg-tunisia-red/5 rounded-full blur-[80px]" />
           
           <div className="space-y-6 relative">
-            <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-white/5 shadow-sm">
+            <div className="p-6 rounded-2xl bg-white  border border-slate-100  shadow-sm">
               <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-tunisia-blue mb-3 flex items-center gap-2">
                 <ExclamationCircleIcon className="w-4 h-4" />
                 Format de Données
@@ -249,7 +249,7 @@ export default function DataImportCenter() {
                 <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">Statut de Synchro</span>
                 <span className="text-[9px] font-black uppercase tracking-widest text-slate-500">{file ? 'Prêt' : 'En attente'}</span>
               </div>
-              <div className="h-1.5 w-full bg-slate-200 dark:bg-white/5 rounded-full overflow-hidden">
+              <div className="h-1.5 w-full bg-slate-200  rounded-full overflow-hidden">
                 <div 
                   className={`h-full bg-tunisia-red transition-all duration-1000 ${file ? 'w-full' : 'w-0'}`} 
                 />

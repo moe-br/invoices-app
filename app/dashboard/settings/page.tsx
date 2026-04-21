@@ -13,25 +13,25 @@ export default async function Page(props: { searchParams: Promise<{ edit?: strin
 
   return (
     <div className={`w-full ${outfit.className}`}>
-      <div className="flex w-full items-center justify-between mb-8 text-slate-900 dark:text-white transition-colors">
+      <div className="flex w-full items-center justify-between mb-8 text-slate-900  transition-colors">
         <h1 className="text-2xl font-black uppercase tracking-tight">Paramètres</h1>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Mon Compte Section */}
-        <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-3xl border border-slate-200/60 dark:border-slate-800 p-8 rounded-3xl shadow-xl h-fit">
+        <div className="bg-white/50  backdrop-blur-3xl border border-slate-200/60  p-8 rounded-3xl shadow-xl h-fit">
           <h2 className="text-sm font-black uppercase tracking-widest text-tunisia-red mb-6">Mon Compte</h2>
-          <div className="flex items-center gap-6 p-4 rounded-2xl bg-white/30 dark:bg-white/5 border border-white/20 dark:border-white/5">
+          <div className="flex items-center gap-6 p-4 rounded-2xl bg-white/30  border border-white/20 ">
             <UserButton appearance={{ elements: { userButtonBox: "scale-[1.5]", userButtonAvatarBox: "w-12 h-12 shadow-2xl" } }} />
             <div>
-              <p className="text-sm font-bold text-slate-900 dark:text-white">Gérer votre profil</p>
+              <p className="text-sm font-bold text-slate-900 ">Gérer votre profil</p>
               <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-1">Sécurité, Email, Préférences</p>
             </div>
           </div>
         </div>
 
         {/* Informations Business Section */}
-        <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-3xl border border-slate-200/60 dark:border-slate-800 p-8 rounded-3xl shadow-xl">
+        <div className="bg-white/50  backdrop-blur-3xl border border-slate-200/60  p-8 rounded-3xl shadow-xl">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-sm font-black uppercase tracking-widest text-tunisia-red">Informations Business</h2>
             {!isEdit ? (
@@ -45,7 +45,7 @@ export default async function Page(props: { searchParams: Promise<{ edit?: strin
             ) : (
               <Link
                 href="/dashboard/settings"
-                className="group flex items-center gap-2 px-4 py-2 bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all hover:scale-105 active:scale-95"
+                className="group flex items-center gap-2 px-4 py-2 bg-slate-200  text-slate-600  rounded-xl text-[10px] font-black uppercase tracking-widest transition-all hover:scale-105 active:scale-95"
               >
                 Annuler
               </Link>
@@ -54,8 +54,8 @@ export default async function Page(props: { searchParams: Promise<{ edit?: strin
 
           {!isEdit ? (
             <div className="space-y-4">
-              <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/30 dark:bg-white/5 border border-white/20 dark:border-white/5">
-                <div className="w-16 h-16 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center overflow-hidden border border-slate-200 dark:border-slate-700">
+              <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/30  border border-white/20 ">
+                <div className="w-16 h-16 rounded-xl bg-slate-100  flex items-center justify-center overflow-hidden border border-slate-200 ">
                   {profile?.logo_url ? (
                     <img src={profile.logo_url} alt="Logo" className="w-full h-full object-contain" />
                   ) : (
@@ -63,7 +63,7 @@ export default async function Page(props: { searchParams: Promise<{ edit?: strin
                   )}
                 </div>
                 <div className="truncate">
-                  <p className="text-sm font-bold text-slate-900 dark:text-white truncate">
+                  <p className="text-sm font-bold text-slate-900  truncate">
                     {profile?.business_name || 'Non défini'}
                   </p>
                   <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-1">
@@ -73,27 +73,27 @@ export default async function Page(props: { searchParams: Promise<{ edit?: strin
               </div>
 
               <div className="grid grid-cols-1 gap-3">
-                <div className="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-400">
+                <div className="flex items-center gap-3 text-sm text-slate-600 ">
                   <FileText className="w-4" />
                   <span>MF: {profile?.tax_id || '—'}</span>
                 </div>
-                <div className="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-400">
+                <div className="flex items-center gap-3 text-sm text-slate-600 ">
                   <User className="w-4" />
                   <span>CIN: {profile?.cin || '—'}</span>
                 </div>
-                <div className="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-400">
+                <div className="flex items-center gap-3 text-sm text-slate-600 ">
                   <PhoneIcon className="w-4" />
                   <span>{profile?.phone || '—'}</span>
                 </div>
-                <div className="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-400">
+                <div className="flex items-center gap-3 text-sm text-slate-600 ">
                   <MailIcon className="w-4" />
                   <span className="truncate">{profile?.email || '—'}</span>
                 </div>
-                <div className="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-400">
+                <div className="flex items-center gap-3 text-sm text-slate-600 ">
                   <GlobeIcon className="w-4" />
                   <span className="truncate">{profile?.website || '—'}</span>
                 </div>
-                <div className="flex items-start gap-3 text-sm text-slate-600 dark:text-slate-400">
+                <div className="flex items-start gap-3 text-sm text-slate-600 ">
                   <MapPinIcon className="w-4 mt-1" />
                   <span className="leading-relaxed">{profile?.address || '—'}</span>
                 </div>
@@ -106,9 +106,9 @@ export default async function Page(props: { searchParams: Promise<{ edit?: strin
           )}
         </div>
 
-        {/* Data & Mobilisation Section */}
-        <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-3xl border border-slate-200/60 dark:border-slate-800 p-8 rounded-3xl shadow-xl md:col-span-2">
-          <h2 className="text-sm font-black uppercase tracking-widest text-tunisia-red mb-6">Data & Mobilisation</h2>
+        {/* Section Données & Importation */}
+        <div className="bg-white/50  backdrop-blur-3xl border border-slate-200/60  p-8 rounded-3xl shadow-xl md:col-span-2">
+          <h2 className="text-sm font-black uppercase tracking-widest text-tunisia-red mb-6">Données & Importation</h2>
           <DataImportCenter />
         </div>
       </div>

@@ -25,9 +25,9 @@ export default function DeleteAllCustomersButton() {
     <>
       <button
         onClick={() => setModalOpen(true)}
-        className="flex h-10 items-center rounded-lg bg-red-50 px-4 text-sm font-bold text-red-600 transition-all hover:bg-red-100 dark:bg-red-900/10 dark:hover:bg-red-900/20 active:scale-95 border border-red-200 dark:border-red-900/30"
+        className="flex h-10 items-center rounded-lg bg-red-50 px-4 text-sm font-bold text-red-600 transition-all hover:bg-red-100   active:scale-95 border border-red-200 "
       >
-        <span className="hidden md:block uppercase tracking-wider">Delete All</span>
+        <span className="hidden md:block uppercase tracking-wider">Tout Supprimer</span>
         <TrashIcon className="h-5 md:ml-4" />
       </button>
 
@@ -35,10 +35,10 @@ export default function DeleteAllCustomersButton() {
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         onConfirm={handleDelete}
-        title="Delete All Clients?"
-        message="Are you sure you want to permanently delete all clients and their associated invoices? This action cannot be undone."
-        confirmLabel={isDeleting ? 'Deleting...' : 'Delete All'}
-        cancelLabel="Cancel"
+        title="Supprimer tous les Clients ?"
+        message="Êtes-vous sûr de vouloir supprimer définitivement tous les clients et leurs factures associées ? Cette action est irréversible."
+        confirmLabel={isDeleting ? 'Suppression...' : 'Tout Supprimer'}
+        cancelLabel="Annuler"
       />
     </>
   );

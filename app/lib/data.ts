@@ -6,11 +6,12 @@ import {
   InvoicesTable,
   LatestInvoiceRaw,
   Revenue,
+  BusinessProfile,
 } from './definitions';
 import { auth } from '@clerk/nextjs/server';
 import { formatCurrency } from './utils';
 
-const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
+import { sql } from './db';
 
 export async function fetchRevenue() {
   try {
@@ -46,7 +47,8 @@ export async function fetchLatestInvoices() {
 
 
     const data = await sql<LatestInvoiceRaw[]>`
-      SELECT invoices.amount, customers.name, customers.image_url, customers.email, invoices.id
+      SELECT invoices.amount, customers.name, customers.image_url, customers.email, invoices.id, 
+             invoices.formatted_number, invoices.invoice_number
       FROM invoices
       JOIN customers ON invoices.customer_id = customers.id
       WHERE invoices.user_id = ${userId}
@@ -76,31 +78,35 @@ export async function fetchCardData() {
       };
     }
 
+    try {
+      const invoiceCountPromise = sql`SELECT COUNT(*) FROM invoices WHERE user_id = ${userId}`;
+      const customerCountPromise = sql`SELECT COUNT(*) FROM customers WHERE user_id = ${userId}`;
+      const invoiceStatusPromise = sql`SELECT
+           SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END) AS "paid",
+           SUM(CASE WHEN status = 'pending' THEN amount ELSE 0 END) AS "pending"
+           FROM invoices WHERE user_id = ${userId}`;
 
-    const invoiceCountPromise = sql`SELECT COUNT(*) FROM invoices WHERE user_id = ${userId}`;
-    const customerCountPromise = sql`SELECT COUNT(*) FROM customers WHERE user_id = ${userId}`;
-    const invoiceStatusPromise = sql`SELECT
-         SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END) AS "paid",
-         SUM(CASE WHEN status = 'pending' THEN amount ELSE 0 END) AS "pending"
-         FROM invoices WHERE user_id = ${userId}`;
+      const data = await Promise.all([
+        invoiceCountPromise,
+        customerCountPromise,
+        invoiceStatusPromise,
+      ]);
 
-    const data = await Promise.all([
-      invoiceCountPromise,
-      customerCountPromise,
-      invoiceStatusPromise,
-    ]);
+      const numberOfInvoices = Number(data[0][0].count ?? '0');
+      const numberOfCustomers = Number(data[1][0].count ?? '0');
+      const totalPaidInvoices = formatCurrency(data[2][0].paid ?? '0');
+      const totalPendingInvoices = formatCurrency(data[2][0].pending ?? '0');
 
-    const numberOfInvoices = Number(data[0][0].count ?? '0');
-    const numberOfCustomers = Number(data[1][0].count ?? '0');
-    const totalPaidInvoices = formatCurrency(data[2][0].paid ?? '0');
-    const totalPendingInvoices = formatCurrency(data[2][0].pending ?? '0');
-
-    return {
-      numberOfCustomers,
-      numberOfInvoices,
-      totalPaidInvoices,
-      totalPendingInvoices,
-    };
+      return {
+        numberOfCustomers,
+        numberOfInvoices,
+        totalPaidInvoices,
+        totalPendingInvoices,
+      };
+    } catch (error) {
+      console.error('Database Error:', error);
+      throw new Error('Failed to fetch card data.');
+    }
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch card data.');
@@ -128,7 +134,9 @@ export async function fetchFilteredInvoices(
         customers.name,
         customers.email,
         customers.image_url,
-        customers.tax_id
+        customers.tax_id,
+        invoices.formatted_number,
+        invoices.invoice_number
       FROM invoices
       JOIN customers ON invoices.customer_id = customers.id
       WHERE
@@ -191,19 +199,27 @@ export async function fetchInvoiceById(id: string) {
         invoices.vat_rate,
         invoices.vat_amount,
         invoices.stamp_duty,
+        invoices.items,
+        invoices.invoice_number,
+        invoices.formatted_number,
         invoices.date
       FROM invoices
       WHERE invoices.id = ${id} AND invoices.user_id = ${userId};
     `;
 
-    const invoice = data.map((invoice) => ({
-      ...invoice,
-      // Convert amount from millimes to Dinars
-      amount: invoice.amount / 1000,
-    }));
-    console.log(invoice); // Invoice is an empty array []
+    const invoice = data[0];
+    
+    // Safely parse items if it's a string (Postgres sometimes returns JSONB as string depending on config/driver)
+    if (invoice && typeof invoice.items === 'string') {
+      try {
+        invoice.items = JSON.parse(invoice.items);
+      } catch (e) {
+        console.error('Failed to parse invoice items:', e);
+        invoice.items = [];
+      }
+    }
 
-    return invoice[0];
+    return invoice;
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch invoice.');
@@ -270,5 +286,98 @@ export async function fetchFilteredCustomers(query: string) {
   } catch (err) {
     console.error('Database Error:', err);
     throw new Error('Failed to fetch customer table.');
+  }
+}
+
+export async function fetchBusinessProfile() {
+  try {
+    const { userId } = await auth();
+    if (!userId) return null;
+
+    const profile = await sql<BusinessProfile[]>`
+      SELECT id, user_id, business_type, business_name, logo_url, tax_id, cin, phone, email, address, website,
+             invoice_pattern, invoice_digits, invoice_reset 
+      FROM business_profiles 
+      WHERE user_id = ${userId}
+    `;
+
+    return profile[0] || null;
+  } catch (error) {
+    console.error('Database Error:', error);
+    return null;
+  }
+}
+
+export async function fetchNextInvoiceNumber() {
+  try {
+    const { userId } = await auth();
+    if (!userId) return 1;
+
+    const lastInvoice = await sql`
+      SELECT MAX(invoice_number) as max_num 
+      FROM invoices 
+      WHERE user_id = ${userId}
+    `;
+    return (lastInvoice[0].max_num || 0) + 1;
+  } catch (error) {
+    console.error('Database Error:', error);
+    return 1;
+  }
+}
+
+export async function fetchSidebarData() {
+  try {
+    const { userId } = await auth();
+    if (!userId) return { invoices: 0, customers: 0, quotes: 0, deliveryNotes: 0, companies: 0, catalog: 0 };
+
+    const [invoices, customers] = await Promise.all([
+      sql`SELECT COUNT(*) FROM invoices WHERE user_id = ${userId}`,
+      sql`SELECT COUNT(*) FROM customers WHERE user_id = ${userId}`,
+    ]);
+
+    return {
+      invoices: Number(invoices[0].count || 0),
+      customers: Number(customers[0].count || 0),
+      quotes: 0, // Placeholder
+      deliveryNotes: 0, // Placeholder
+      companies: 0, // Placeholder
+      catalog: 0, // Placeholder
+    };
+  } catch (error) {
+    console.error('Database Error:', error);
+    return { invoices: 0, customers: 0, quotes: 0, deliveryNotes: 0, companies: 0, catalog: 0 };
+  }
+}
+
+export async function fetchDailyRevenue() {
+  try {
+    const { userId } = await auth();
+    if (!userId) return [];
+
+    const data = await sql`
+      WITH date_series AS (
+        SELECT generate_series(
+          DATE_TRUNC('month', CURRENT_DATE),
+          DATE_TRUNC('month', CURRENT_DATE) + interval '1 month' - interval '1 day',
+          interval '1 day'
+        )::date AS day
+      )
+      SELECT 
+        TO_CHAR(ds.day, 'DD Mon') as label,
+        ds.day as date,
+        COALESCE(SUM(i.amount), 0) / 1000.0 as amount
+      FROM date_series ds
+      LEFT JOIN invoices i ON DATE_TRUNC('day', i.date)::date = ds.day AND i.user_id = ${userId}
+      GROUP BY ds.day
+      ORDER BY ds.day ASC
+    `;
+
+    return data.map(row => ({
+      label: row.label,
+      amount: Number(row.amount),
+    }));
+  } catch (error) {
+    console.error('Database Error:', error);
+    return [];
   }
 }

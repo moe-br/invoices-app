@@ -19,28 +19,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
-      <html lang="en" suppressHydrationWarning className={cn("font-sans", inter.variable)}>
-        <head>
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `
-                (function() {
-                  try {
-                    var theme = localStorage.getItem('theme');
-                    var supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
-                    if (!theme && supportDarkMode) theme = 'dark';
-                    if (theme === 'dark') document.documentElement.classList.add('dark');
-                  } catch (e) {}
-                })();
-              `,
-            }}
-          />
-        </head>
-        <body suppressHydrationWarning className={`${inter.className} antialiased bg-white dark:bg-slate-950 transition-colors duration-300`}>
+    <html lang="en" className={cn("font-sans", inter.variable)}>
+      <body className={`${inter.className} antialiased bg-white transition-colors duration-300`}>
+        <ClerkProvider>
           {children}
-        </body>
-      </html>
-    </ClerkProvider>
+        </ClerkProvider>
+      </body>
+    </html>
   );
 }

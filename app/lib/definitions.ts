@@ -9,6 +9,13 @@ export type User = {
   password: string;
 };
 
+export type InvoiceItem = {
+  id: string;
+  description: string;
+  qty: number;
+  unitPrice: number;
+};
+
 export type Customer = {
   id: string;
   name: string;
@@ -28,6 +35,9 @@ export type Invoice = {
   vat_rate: number; // e.g., 19, 13, 7
   vat_amount: number;
   stamp_duty: number; // Usually 1000 millimes (1 TND)
+  items?: InvoiceItem[];
+  invoice_number?: number;
+  formatted_number?: string;
 };
 
 export type Revenue = {
@@ -41,6 +51,8 @@ export type LatestInvoice = {
   image_url: string;
   email: string;
   amount: string;
+  formatted_number?: string;
+  invoice_number?: number;
 };
 
 // The database returns a number for amount, but we later format it to a string with the formatCurrency function
@@ -58,6 +70,8 @@ export type InvoicesTable = {
   amount: number;
   status: 'pending' | 'paid';
   tax_id?: string;
+  formatted_number?: string;
+  invoice_number?: number;
 };
 
 export type CustomersTableType = {
@@ -94,6 +108,7 @@ export type InvoiceForm = {
   amount: number;
   status: 'pending' | 'paid';
   vat_rate: number;
+  items?: InvoiceItem[];
 };
 
 export type BusinessType = 'societe' | 'auto_entrepreneur';
@@ -110,6 +125,10 @@ export type BusinessProfile = {
   email?: string;
   address?: string;
   website?: string;
+  invoice_pattern?: string;
+  invoice_digits?: number;
+  invoice_reset?: string;
+  api_key?: string;
   created_at?: string;
   updated_at?: string;
 };

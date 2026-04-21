@@ -22,7 +22,7 @@ export default async function Page(props: {
   return (
     <main className={`w-full ${outfit.className}`}>
       <div className="flex w-full items-center justify-between mb-8">
-        <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight uppercase transition-colors">Clients</h1>
+        <h1 className="text-2xl font-black text-slate-900  tracking-tight uppercase transition-colors">Clients</h1>
         <div className="flex items-center gap-2">
           <CreateCustomer />
           <DeleteAllCustomersButton />

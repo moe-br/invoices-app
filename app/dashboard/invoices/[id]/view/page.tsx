@@ -1,4 +1,4 @@
-import { fetchInvoiceById, fetchCustomers } from '@/app/lib/data';
+import { fetchInvoiceById, fetchCustomers, fetchBusinessProfile } from '@/app/lib/data';
 import { notFound } from 'next/navigation';
 import InvoiceTemplate from '@/app/ui/invoices/invoice-template';
 import Link from 'next/link';
@@ -11,10 +11,11 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
   const id = params.id;
   
-  // Fetch both the invoice and the full customer list to find the matching customer
-  const [invoice, customers] = await Promise.all([
+  // Fetch the invoice, the customer list, and the user's business profile
+  const [invoice, customers, profile] = await Promise.all([
     fetchInvoiceById(id),
     fetchCustomers(),
+    fetchBusinessProfile(),
   ]);
 
   if (!invoice) {
@@ -25,17 +26,19 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
 
   return (
     <main>
-       <Breadcrumbs
-        breadcrumbs={[
-          { label: 'Invoices', href: '/dashboard/invoices' },
-          {
-            label: 'View Invoice',
-            href: `/dashboard/invoices/${id}/view`,
-            active: true,
-          },
-        ]}
-      />
-      <div className="flex justify-between items-center mb-8">
+      <div className="no-print">
+        <Breadcrumbs
+          breadcrumbs={[
+            { label: 'Invoices', href: '/dashboard/invoices' },
+            {
+              label: 'View Invoice',
+              href: `/dashboard/invoices/${id}/view`,
+              active: true,
+            },
+          ]}
+        />
+      </div>
+      <div className="flex justify-between items-center mb-8 no-print">
         <Link
           href="/dashboard/invoices"
           className="flex items-center gap-2 text-sm font-medium text-slate-400 hover:text-tunisia-red transition-colors"
@@ -46,7 +49,11 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
         <PrintButton />
       </div>
 
-      <InvoiceTemplate invoice={invoice} customer={customer || { name: 'Unknown' }} />
+      <InvoiceTemplate 
+        invoice={invoice} 
+        customer={customer || { name: 'Unknown' }} 
+        profile={profile}
+      />
     </main>
   );
 }

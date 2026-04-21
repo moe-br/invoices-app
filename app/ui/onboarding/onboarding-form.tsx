@@ -130,25 +130,25 @@ export default function OnboardingForm({ initialData }: { initialData?: any }) {
             <div key={s} className="flex flex-col items-center">
               <div className={clsx(
                 "w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300",
-                step >= s ? "bg-tunisia-red border-tunisia-red text-white shadow-lg shadow-red-500/20" : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-400"
+                step >= s ? "bg-tunisia-red border-tunisia-red text-white shadow-lg shadow-red-500/20" : "bg-white  border-slate-200  text-slate-400"
               )}>
                 {step > s ? <CheckCircle2 className="w-6 h-6" /> : <span>{s}</span>}
               </div>
-              <span className={clsx("mt-2 text-xs font-semibold uppercase tracking-wider", step >= s ? "text-slate-900 dark:text-white" : "text-slate-400")}>
+              <span className={clsx("mt-2 text-xs font-semibold uppercase tracking-wider", step >= s ? "text-slate-900 " : "text-slate-400")}>
                 {s === 1 ? 'Typologie' : s === 2 ? 'Identité' : 'Coordonnées'}
               </span>
             </div>
           ))}
-          <div className="absolute top-[34px] left-[5%] right-[5%] h-[2px] bg-slate-100 dark:bg-slate-800 -z-10">
+          <div className="absolute top-[34px] left-[5%] right-[5%] h-[2px] bg-slate-100  -z-10">
             <div className="h-full bg-tunisia-red transition-all duration-500 ease-out" style={{ width: `${((step - 1) / 2) * 90 + 5}%` }} />
           </div>
         </div>
       </div>
 
-      <div className="bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl rounded-3xl p-8 border border-white/20 dark:border-slate-800 shadow-2xl">
+      <div className="bg-white/70  backdrop-blur-xl rounded-3xl p-8 border border-white/20  shadow-2xl">
         <form onSubmit={handleSubmit}>
           {message && (
-            <div className={clsx("mb-6 p-4 rounded-2xl border text-sm font-medium animate-in fade-in slide-in-from-top-2 duration-300", message.includes('Succès') ? "bg-green-50 dark:bg-green-900/20 border-green-200 text-green-600" : "bg-red-50 dark:bg-red-900/20 border-red-200 text-red-600")}>
+            <div className={clsx("mb-6 p-4 rounded-2xl border text-sm font-medium animate-in fade-in slide-in-from-top-2 duration-300", message.includes('Succès') ? "bg-green-50  border-green-200 text-green-600" : "bg-red-50  border-red-200 text-red-600")}>
               {message}
             </div>
           )}
@@ -156,8 +156,8 @@ export default function OnboardingForm({ initialData }: { initialData?: any }) {
           {step === 1 && (
             <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
               <div className="text-center space-y-2">
-                <h2 className="text-3xl font-bold bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-400 bg-clip-text text-transparent">Bienvenue chez TuniBill</h2>
-                <p className="text-slate-500 dark:text-slate-400">Quelle est la structure de votre activité ?</p>
+                <h2 className="text-3xl font-bold bg-gradient-to-r from-slate-900 to-slate-600   bg-clip-text text-transparent">Bienvenue chez TuniBill</h2>
+                <p className="text-slate-500 ">Quelle est la structure de votre activité ?</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -182,32 +182,32 @@ export default function OnboardingForm({ initialData }: { initialData?: any }) {
           {step === 2 && (
             <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
               <div className="space-y-2">
-                <h2 className="text-2xl font-bold dark:text-white">Identité de votre Business</h2>
-                <p className="text-slate-500 dark:text-slate-400">Donnez un nom et un visage à votre entreprise.</p>
+                <h2 className="text-2xl font-bold ">Identité de votre Business</h2>
+                <p className="text-slate-500 ">Donnez un nom et un visage à votre entreprise.</p>
               </div>
 
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">{labels.name}</label>
+                  <label className="text-sm font-semibold text-slate-700 ">{labels.name}</label>
                   <div className="relative group">
                     <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-tunisia-red transition-colors" />
                     <input 
                       type="text" name="businessName" value={formData.businessName} onChange={handleChange}
                       placeholder={formData.businessType === 'societe' ? "Ex: TuniBill SARL" : "Ex: Mohamed Ben Ali"}
-                      className="w-full pl-12 pr-4 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-tunisia-red focus:border-transparent outline-none dark:text-white"
+                      className="w-full pl-12 pr-4 py-3 bg-white  border border-slate-200  rounded-2xl focus:ring-2 focus:ring-tunisia-red focus:border-transparent outline-none "
                       required
                     />
                   </div>
                 </div>
 
                 <div className="space-y-4">
-                  <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Votre Logo</label>
+                  <label className="text-sm font-semibold text-slate-700 ">Votre Logo</label>
                   <div className="flex items-center gap-6">
-                    <div className="w-24 h-24 rounded-2xl bg-slate-100 dark:bg-slate-800 border-2 border-dashed border-slate-200 dark:border-slate-700 flex items-center justify-center overflow-hidden">
+                    <div className="w-24 h-24 rounded-2xl bg-slate-100  border-2 border-dashed border-slate-200  flex items-center justify-center overflow-hidden">
                       {formData.logoUrl ? <img src={formData.logoUrl} alt="Preview" className="w-full h-full object-contain" /> : <ImageIcon className="w-8 h-8 text-slate-400" />}
                     </div>
                     <div className="flex-1 space-y-2">
-                      <label className="inline-flex items-center px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold uppercase tracking-widest cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700">
+                      <label className="inline-flex items-center px-4 py-2 bg-white  border border-slate-200  rounded-xl text-xs font-bold uppercase tracking-widest cursor-pointer hover:bg-slate-50 ">
                         <ImageIcon className="w-4 h-4 mr-2" /> Choisir une image
                         <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
                       </label>
@@ -217,7 +217,7 @@ export default function OnboardingForm({ initialData }: { initialData?: any }) {
               </div>
 
               <div className="flex justify-between pt-4">
-                <button type="button" onClick={prevStep} className="flex items-center gap-2 text-slate-500 hover:text-slate-800 dark:hover:text-white font-semibold transition-colors">
+                <button type="button" onClick={prevStep} className="flex items-center gap-2 text-slate-500 hover:text-slate-800  font-semibold transition-colors">
                   <ChevronLeft className="w-5 h-5" /> Retour
                 </button>
                 <Button type="button" onClick={nextStep} disabled={!formData.businessName} className="rounded-2xl px-8 h-12">
@@ -230,8 +230,8 @@ export default function OnboardingForm({ initialData }: { initialData?: any }) {
           {step === 3 && (
             <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
               <div className="space-y-2">
-                <h2 className="text-2xl font-bold dark:text-white">Coordonnées & Informations Légales</h2>
-                <p className="text-slate-500 dark:text-slate-400">Ces informations figureront sur vos factures. Tous les champs sont obligatoires.</p>
+                <h2 className="text-2xl font-bold ">Coordonnées & Informations Légales</h2>
+                <p className="text-slate-500 ">Ces informations figureront sur vos factures. Tous les champs sont obligatoires.</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -242,13 +242,13 @@ export default function OnboardingForm({ initialData }: { initialData?: any }) {
                 <InputField label="Site Web (Lien social) *" icon={Globe} name="website" value={formData.website} onChange={handleChange} placeholder="www.domaine.tn" error={errors.website} required />
                 
                 <div className="md:col-span-2 space-y-2">
-                  <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Adresse *</label>
+                  <label className="text-sm font-semibold text-slate-700 ">Adresse *</label>
                   <div className="relative group">
                     <MapPin className="absolute left-4 top-3 w-5 h-5 text-slate-400 group-focus-within:text-tunisia-red transition-colors" />
                     <textarea 
                       name="address" value={formData.address} onChange={handleChange} rows={2} required
                       placeholder="Adresse complète du siège"
-                      className="w-full pl-12 pr-4 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-tunisia-red outline-none dark:text-white"
+                      className="w-full pl-12 pr-4 py-3 bg-white  border border-slate-200  rounded-2xl focus:ring-2 focus:ring-tunisia-red outline-none "
                     />
                   </div>
                   {errors.address && <p className="text-red-500 text-xs mt-1">{errors.address[0]}</p>}
@@ -274,12 +274,12 @@ export default function OnboardingForm({ initialData }: { initialData?: any }) {
 function InputField({ label, icon: Icon, name, value, onChange, placeholder, error, required }: any) {
   return (
     <div className="space-y-2">
-      <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">{label}</label>
+      <label className="text-sm font-semibold text-slate-700 ">{label}</label>
       <div className="relative group">
         <Icon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-tunisia-red transition-colors" />
         <input 
           type="text" name={name} value={value} onChange={onChange} placeholder={placeholder} required={required}
-          className="w-full pl-12 pr-4 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-tunisia-red outline-none dark:text-white"
+          className="w-full pl-12 pr-4 py-3 bg-white  border border-slate-200  rounded-2xl focus:ring-2 focus:ring-tunisia-red outline-none "
         />
       </div>
       {error && <p className="text-red-500 text-xs mt-1">{error[0]}</p>}
@@ -289,12 +289,12 @@ function InputField({ label, icon: Icon, name, value, onChange, placeholder, err
 
 function BusinessTypeCard({ title, description, icon: Icon, selected, onClick }: any) {
   return (
-    <div onClick={onClick} className={clsx("cursor-pointer p-6 rounded-3xl border-2 transition-all group", selected ? "border-tunisia-red bg-tunisia-red/5" : "border-slate-100 dark:border-slate-800 bg-white/50 dark:bg-slate-800 hover:border-slate-200")}>
-      <div className={clsx("w-14 h-14 rounded-2xl flex items-center justify-center mb-4", selected ? "bg-tunisia-red text-white" : "bg-slate-50 dark:bg-slate-700 text-slate-500 group-hover:text-tunisia-red")}>
+    <div onClick={onClick} className={clsx("cursor-pointer p-6 rounded-3xl border-2 transition-all group", selected ? "border-tunisia-red bg-tunisia-red/5" : "border-slate-100  bg-white/50  hover:border-slate-200")}>
+      <div className={clsx("w-14 h-14 rounded-2xl flex items-center justify-center mb-4", selected ? "bg-tunisia-red text-white" : "bg-slate-50  text-slate-500 group-hover:text-tunisia-red")}>
         <Icon className="w-7 h-7" />
       </div>
-      <h3 className={clsx("font-bold text-lg mb-1", selected ? "text-tunisia-red" : "text-slate-900 dark:text-white")}>{title}</h3>
-      <p className="text-sm text-slate-500 dark:text-slate-400">{description}</p>
+      <h3 className={clsx("font-bold text-lg mb-1", selected ? "text-tunisia-red" : "text-slate-900 ")}>{title}</h3>
+      <p className="text-sm text-slate-500 ">{description}</p>
     </div>
   );
 }

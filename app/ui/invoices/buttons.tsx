@@ -12,7 +12,7 @@ export function CreateInvoice() {
       href="/dashboard/invoices/create"
       className="flex h-10 items-center rounded-lg bg-tunisia-red px-4 text-sm font-bold text-white transition-all hover:bg-red-700 shadow-lg shadow-red-900/20 active:scale-95"
     >
-      <span className="hidden md:block uppercase tracking-wider">New Invoice</span>{' '}
+      <span className="hidden md:block uppercase tracking-wider">Nouvelle Facture</span>{' '}
       <PlusIcon className="h-5 md:ml-4" />
     </Link>
   );
@@ -57,10 +57,10 @@ export function DeleteInvoice({ id }: { id: string }) {
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         onConfirm={() => deleteInvoice(id)}
-        title="Delete Invoice?"
-        message="Are you sure you want to permanently delete this invoice? This action cannot be undone."
-        confirmLabel="Delete"
-        cancelLabel="Discard"
+        title="Supprimer la facture ?"
+        message="Êtes-vous sûr de vouloir supprimer définitivement cette facture ? Cette action est irréversible."
+        confirmLabel="Supprimer"
+        cancelLabel="Annuler"
       />
     </>
   );
