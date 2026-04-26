@@ -22,22 +22,32 @@ export default function RevenueAreaChart({ data }: RevenueAreaChartProps) {
   useEffect(() => {
     setIsMounted(true);
   }, []);
-  // Format Y-axis to show 'k'
+  // Format Y-axis to dynamically format Dinars
   const formatYAxis = (value: number) => {
-    if (value === 0) return '0k';
-    return `${value.toFixed(2)}k`;
+    if (value === 0) return '0';
+    if (value >= 1000) {
+      return `${(value / 1000).toFixed(1)}k`;
+    }
+    return `${value.toFixed(0)}`;
   };
 
   // Custom Tooltip
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
+      const amountInTND = payload[0].value;
+      const formattedTND = amountInTND.toLocaleString('fr-TN', {
+        style: 'currency',
+        currency: 'TND',
+        minimumFractionDigits: 3,
+      });
+
       return (
-        <div className="bg-white/80 border border-slate-100 p-4 rounded-2xl shadow-2xl backdrop-blur-xl ring-1 ring-black/5 animate-in fade-in zoom-in duration-300">
-          <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2">{label}</p>
+        <div className="bg-white border border-slate-100 p-4 rounded-2xl shadow-xl shadow-slate-200/50 backdrop-blur-xl ring-1 ring-black/5 animate-in fade-in zoom-in duration-300">
+          <p className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400 mb-2">{label}</p>
           <div className="flex items-center gap-2">
              <div className="w-1.5 h-1.5 rounded-full bg-tunisia-red animate-pulse"></div>
              <p className="text-sm font-black text-slate-900 tracking-tight">
-               {payload[0].value.toFixed(3)} <span className="text-[10px] text-slate-400">TND</span>
+               {formattedTND}
              </p>
           </div>
         </div>

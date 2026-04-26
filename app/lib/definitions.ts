@@ -21,7 +21,9 @@ export type Customer = {
   name: string;
   email: string;
   image_url: string;
+  type?: 'individual' | 'company';
   tax_id?: string; // Matricule Fiscal
+  cin?: string; // Carte d'Identité Nationale
   address?: string;
   phone?: string;
 };
@@ -40,7 +42,53 @@ export type Invoice = {
   formatted_number?: string;
 };
 
+export type QuoteItem = {
+  id: string;
+  description: string;
+  qty: number;
+  unitPrice: number;
+};
+
+export type Quote = {
+  id: string;
+  customer_id: string;
+  amount: number; // HT in cents
+  status: 'pending' | 'accepted' | 'rejected';
+  date: string;
+  validity_days: number;
+  vat_rate: number;
+  vat_amount: number;
+  stamp_duty: number;
+  items?: QuoteItem[];
+  quote_number?: number;
+  formatted_number?: string;
+};
+
+export type QuoteForm = {
+  id: string;
+  customer_id: string;
+  amount: number;
+  status: 'pending' | 'accepted' | 'rejected';
+  validity_days: number;
+  vat_rate: number;
+  items?: QuoteItem[];
+};
+
+export type QuotesTableType = {
+  id: string;
+  customer_id: string;
+  name: string;
+  email: string;
+  image_url: string;
+  date: string;
+  amount: number;
+  status: 'pending' | 'accepted' | 'rejected';
+  quote_number?: number;
+  formatted_number?: string;
+};
+
 export type Revenue = {
+
   month: string;
   revenue: number;
 };
@@ -69,7 +117,9 @@ export type InvoicesTable = {
   date: string;
   amount: number;
   status: 'pending' | 'paid';
+  type?: 'individual' | 'company';
   tax_id?: string;
+  cin?: string;
   formatted_number?: string;
   invoice_number?: number;
 };
@@ -79,6 +129,9 @@ export type CustomersTableType = {
   name: string;
   email: string;
   image_url: string;
+  type: 'individual' | 'company';
+  cin?: string;
+  tax_id?: string;
   total_invoices: number;
   total_pending: number;
   total_paid: number;
@@ -90,6 +143,9 @@ export type FormattedCustomersTable = {
   name: string;
   email: string;
   image_url: string;
+  type: 'individual' | 'company';
+  cin?: string;
+  tax_id?: string;
   total_invoices: number;
   total_pending: string;
   total_paid: string;

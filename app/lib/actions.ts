@@ -23,9 +23,11 @@ const UpdateInvoice = FormSchema.omit({ id: true, date: true });
 const CustomerSchema = z.object({
   name: z.string().min(2, 'Le nom doit contenir au moins 2 caractères.'),
   email: z.string().email('Email invalide.'),
+  type: z.enum(['individual', 'company']).default('individual'),
   phone: z.string().optional(),
   address: z.string().optional(),
   tax_id: z.string().optional(),
+  cin: z.string().optional(),
 });
 
 export async function createCustomer(prevState: any, formData: FormData) {
@@ -35,9 +37,11 @@ export async function createCustomer(prevState: any, formData: FormData) {
   const validatedFields = CustomerSchema.safeParse({
     name: formData.get('name'),
     email: formData.get('email'),
+    type: formData.get('type') || 'individual',
     phone: formData.get('phone'),
     address: formData.get('address'),
     tax_id: formData.get('tax_id'),
+    cin: formData.get('cin'),
   });
 
   if (!validatedFields.success) {
@@ -47,13 +51,15 @@ export async function createCustomer(prevState: any, formData: FormData) {
     };
   }
 
-  const { name, email, phone, address, tax_id } = validatedFields.data;
+  const { name, email, type, phone, address, tax_id, cin } = validatedFields.data;
   const imageUrl = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name)}`;
 
   try {
+    await sql`ALTER TABLE customers ADD COLUMN IF NOT EXISTS type TEXT DEFAULT 'individual';`;
+    await sql`ALTER TABLE customers ADD COLUMN IF NOT EXISTS cin TEXT;`;
     await sql`
-      INSERT INTO customers (user_id, name, email, image_url, phone, address, tax_id)
-      VALUES (${userId}, ${name}, ${email}, ${imageUrl}, ${phone || null}, ${address || null}, ${tax_id || null})
+      INSERT INTO customers (user_id, name, email, image_url, type, phone, address, tax_id, cin)
+      VALUES (${userId}, ${name}, ${email}, ${imageUrl}, ${type}, ${phone || null}, ${address || null}, ${tax_id || null}, ${cin || null})
     `;
   } catch (error) {
     return { message: 'Erreur de base de données : Échec de la création du client.' };

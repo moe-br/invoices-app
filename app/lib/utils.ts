@@ -8,6 +8,15 @@ export const formatCurrency = (amount: number) => {
   });
 };
 
+// Use when the value is already in TND (not millimes), e.g. in live form previews
+export const formatTND = (amount: number) => {
+  return amount.toLocaleString('fr-TN', {
+    style: 'currency',
+    currency: 'TND',
+    minimumFractionDigits: 3,
+  });
+};
+
 export const formatDateToLocal = (
   dateStr: string,
   locale: string = 'en-US',

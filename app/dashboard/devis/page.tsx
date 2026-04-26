@@ -1,0 +1,54 @@
+import { Suspense } from 'react';
+import { fetchFilteredQuotes, fetchCustomers } from '@/app/lib/data';
+import FinancialOperations from '@/app/ui/devis/financial-operations';
+import Form from '@/app/ui/devis/create-form';
+import { Metadata } from 'next';
+import { outfit } from '@/app/ui/fonts';
+
+export const metadata: Metadata = {
+    title: 'Devis Operations | TuniBill',
+};
+
+export default async function Page(props: {
+    searchParams?: Promise<{
+        query?: string;
+        page?: string;
+    }>;
+}) {
+    const searchParams = await props.searchParams;
+    const query = searchParams?.query || '';
+    const currentPage = Number(searchParams?.page) || 1;
+    
+    // Fetch data in parallel
+    const [quotes, customers] = await Promise.all([
+        fetchFilteredQuotes(query, currentPage),
+        fetchCustomers(),
+    ]);
+
+    return (
+        <main className={`${outfit.className} min-h-screen bg-white  p-4 md:p-6 transition-colors duration-500`}>
+            {/* Unified Split Layout */}
+            <div className="flex flex-col xl:flex-row gap-6 h-full max-w-[1600px] mx-auto">
+                
+                {/* Left Side: Financial Operations List (60%) */}
+                <div className="flex-1 xl:flex-[1.3] flex flex-col min-h-[500px]">
+                    <FinancialOperations quotes={quotes} />
+                </div>
+
+                {/* Right Side: Quote Issuance Form (40%) */}
+                <div className="flex-1 xl:flex-1 flex flex-col">
+                    <div className="bg-slate-50/50  rounded-[2rem] border border-slate-100  overflow-hidden h-full shadow-sm  transition-all">
+                        <Form customers={customers} />
+                    </div>
+                </div>
+
+            </div>
+
+            {/* Background Decoration */}
+            <div className="fixed top-0 left-0 w-full h-full -z-10 pointer-events-none overflow-hidden opacity-30 ">
+                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-tunisia-blue/5  blur-[120px] rounded-full"></div>
+                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-tunisia-red/5  blur-[120px] rounded-full"></div>
+            </div>
+        </main>
+    );
+}

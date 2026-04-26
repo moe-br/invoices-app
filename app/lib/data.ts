@@ -7,6 +7,8 @@ import {
   LatestInvoiceRaw,
   Revenue,
   BusinessProfile,
+  QuotesTableType,
+  QuoteForm,
 } from './definitions';
 import { auth } from '@clerk/nextjs/server';
 import { formatCurrency } from './utils';
@@ -249,11 +251,14 @@ export async function fetchCustomers() {
   }
 }
 
-export async function fetchFilteredCustomers(query: string) {
+export async function fetchFilteredCustomers(query: string, type?: 'individual' | 'company') {
   try {
     const { userId } = await auth();
     if (!userId) return [];
 
+    // Proactive migration: Ensure type and cin columns exist
+    await sql`ALTER TABLE customers ADD COLUMN IF NOT EXISTS type TEXT DEFAULT 'individual';`;
+    await sql`ALTER TABLE customers ADD COLUMN IF NOT EXISTS cin TEXT;`;
 
     const data = await sql<CustomersTableType[]>`
 		SELECT
@@ -261,6 +266,9 @@ export async function fetchFilteredCustomers(query: string) {
 		  customers.name,
 		  customers.email,
 		  customers.image_url,
+		  customers.type,
+		  customers.cin,
+		  customers.tax_id,
 		  customers.phone,
 		  COUNT(invoices.id) AS total_invoices,
 		  SUM(CASE WHEN invoices.status = 'pending' THEN invoices.amount ELSE 0 END) AS total_pending,
@@ -268,11 +276,15 @@ export async function fetchFilteredCustomers(query: string) {
 		FROM customers
 		LEFT JOIN invoices ON customers.id = invoices.customer_id AND invoices.user_id = ${userId}
 		WHERE
-		  customers.user_id = ${userId} AND (
+		  customers.user_id = ${userId} 
+		  ${type ? sql`AND customers.type = ${type}` : sql``}
+		  AND (
 		  customers.name ILIKE ${`%${query}%`} OR
           customers.phone ILIKE ${`%${query}%`} OR
+          customers.tax_id ILIKE ${`%${query}%`} OR
+          customers.cin ILIKE ${`%${query}%`} OR
         customers.email ILIKE ${`%${query}%`} )
-		GROUP BY customers.id, customers.name, customers.email, customers.image_url, customers.phone
+		GROUP BY customers.id, customers.name, customers.email, customers.image_url, customers.type, customers.cin, customers.tax_id, customers.phone
 		ORDER BY customers.name ASC
 	  `;
 
@@ -330,9 +342,14 @@ export async function fetchSidebarData() {
     const { userId } = await auth();
     if (!userId) return { invoices: 0, customers: 0, quotes: 0, deliveryNotes: 0, companies: 0, catalog: 0 };
 
-    const [invoices, customers] = await Promise.all([
+    // Proactive migration: Ensure type and cin columns exist
+    await sql`ALTER TABLE customers ADD COLUMN IF NOT EXISTS type TEXT DEFAULT 'individual';`;
+    await sql`ALTER TABLE customers ADD COLUMN IF NOT EXISTS cin TEXT;`;
+
+    const [invoices, customers, companies] = await Promise.all([
       sql`SELECT COUNT(*) FROM invoices WHERE user_id = ${userId}`,
-      sql`SELECT COUNT(*) FROM customers WHERE user_id = ${userId}`,
+      sql`SELECT COUNT(*) FROM customers WHERE user_id = ${userId} AND type = 'individual'`,
+      sql`SELECT COUNT(*) FROM customers WHERE user_id = ${userId} AND type = 'company'`,
     ]);
 
     return {
@@ -340,7 +357,7 @@ export async function fetchSidebarData() {
       customers: Number(customers[0].count || 0),
       quotes: 0, // Placeholder
       deliveryNotes: 0, // Placeholder
-      companies: 0, // Placeholder
+      companies: Number(companies[0].count || 0),
       catalog: 0, // Placeholder
     };
   } catch (error) {
@@ -379,5 +396,157 @@ export async function fetchDailyRevenue() {
   } catch (error) {
     console.error('Database Error:', error);
     return [];
+  }
+}
+
+export async function fetchFilteredQuotes(
+  query: string,
+  currentPage: number,
+) {
+  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+
+  try {
+    const { userId } = await auth();
+    if (!userId) return [];
+
+    // Proactive migration: Ensure quotes table exists
+    await sql`
+      CREATE TABLE IF NOT EXISTS quotes (
+        id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+        user_id VARCHAR(255) NOT NULL,
+        customer_id UUID NOT NULL,
+        amount INT NOT NULL,
+        status VARCHAR(255) NOT NULL,
+        date DATE NOT NULL,
+        validity_days INT DEFAULT 30,
+        vat_rate DECIMAL(5,2) DEFAULT 19.00,
+        vat_amount INT DEFAULT 0,
+        stamp_duty INT DEFAULT 1000,
+        quote_number INT NOT NULL,
+        formatted_number TEXT,
+        items JSONB,
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW()
+      );
+    `;
+
+    const quotes = await sql<QuotesTableType[]>`
+      SELECT
+        quotes.id,
+        quotes.amount,
+        quotes.date,
+        quotes.status,
+        customers.name,
+        customers.email,
+        customers.image_url,
+        quotes.formatted_number,
+        quotes.quote_number
+      FROM quotes
+      JOIN customers ON quotes.customer_id = customers.id
+      WHERE
+        quotes.user_id = ${userId} AND (
+        customers.name ILIKE ${`%${query}%`} OR
+        customers.email ILIKE ${`%${query}%`} OR
+        quotes.amount::text ILIKE ${`%${query}%`} OR
+        quotes.date::text ILIKE ${`%${query}%`} OR
+        quotes.status ILIKE ${`%${query}%`} )
+      ORDER BY quotes.date DESC
+      LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
+    `;
+
+    return quotes;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch quotes.');
+  }
+}
+
+export async function fetchQuotesPages(query: string) {
+  try {
+    const { userId } = await auth();
+    if (!userId) return 0;
+
+    // Proactive migration: Ensure quotes table exists
+    await sql`
+      CREATE TABLE IF NOT EXISTS quotes (
+        id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+        user_id VARCHAR(255) NOT NULL,
+        customer_id UUID NOT NULL,
+        amount INT NOT NULL,
+        status VARCHAR(255) NOT NULL,
+        date DATE NOT NULL,
+        validity_days INT DEFAULT 30,
+        vat_rate DECIMAL(5,2) DEFAULT 19.00,
+        vat_amount INT DEFAULT 0,
+        stamp_duty INT DEFAULT 1000,
+        quote_number INT NOT NULL,
+        formatted_number TEXT,
+        items JSONB,
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW()
+      );
+    `;
+
+    const data = await sql`SELECT COUNT(*)
+    FROM quotes
+    JOIN customers ON quotes.customer_id = customers.id
+    WHERE
+      quotes.user_id = ${userId} AND (
+      customers.name ILIKE ${`%${query}%`} OR
+      customers.email ILIKE ${`%${query}%`} OR
+      quotes.amount::text ILIKE ${`%${query}%`} OR
+      quotes.date::text ILIKE ${`%${query}%`} OR
+      quotes.status ILIKE ${`%${query}%`} )
+  `;
+
+    const totalPages = Math.ceil(Number(data[0].count) / ITEMS_PER_PAGE);
+    return totalPages;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch total number of quotes.');
+  }
+}
+
+export async function fetchQuoteById(id: string) {
+
+  try {
+    const { userId } = await auth();
+    if (!userId) return undefined;
+
+
+    const data = await sql<QuoteForm[]>`
+      SELECT
+        quotes.id,
+        quotes.customer_id,
+        quotes.amount,
+        quotes.status,
+        quotes.vat_rate,
+        quotes.vat_amount,
+        quotes.stamp_duty,
+        quotes.validity_days,
+        quotes.items,
+        quotes.quote_number,
+        quotes.formatted_number,
+        quotes.date
+      FROM quotes
+      WHERE quotes.id = ${id} AND quotes.user_id = ${userId};
+    `;
+
+    const quote = data[0];
+    
+    // Safely parse items if it's a string (Postgres sometimes returns JSONB as string depending on config/driver)
+    if (quote && typeof quote.items === 'string') {
+      try {
+        quote.items = JSON.parse(quote.items);
+      } catch (e) {
+        console.error('Failed to parse quote items:', e);
+        quote.items = [];
+      }
+    }
+
+    return quote;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch quote.');
   }
 }

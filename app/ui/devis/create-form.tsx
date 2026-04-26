@@ -11,12 +11,12 @@ import {
   SparklesIcon,
   UserPlusIcon,
 } from '@heroicons/react/24/outline';
-import { createInvoice, State } from '@/app/lib/actions';
+import { createQuote, State } from '@/app/lib/quote-actions';
 import { useActionState, useState, useMemo } from 'react';
 import ClientSelect from '@/app/ui/invoices/client-select';
 import clsx from 'clsx';
 
-type InvoiceItem = {
+type QuoteItemType = {
   id: string;
   description: string;
   qty: string | number;
@@ -25,11 +25,12 @@ type InvoiceItem = {
 
 export default function Form({ customers }: { customers: CustomerField[] }) {
   const initialState: State = { message: '', errors: {} };
-  const [state, formAction] = useActionState(createInvoice, initialState);
+  const [state, formAction] = useActionState(createQuote, initialState);
 
   const [selectedCustomerId, setSelectedCustomerId] = useState('');
   const [billingName, setBillingName] = useState('');
-  const [items, setItems] = useState<InvoiceItem[]>([
+  const [validityDays, setValidityDays] = useState(30);
+  const [items, setItems] = useState<QuoteItemType[]>([
     { id: Math.random().toString(36).substr(2, 9), description: '', qty: 1, unitPrice: '' }
   ]);
 
@@ -57,7 +58,7 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
     }
   };
 
-  const updateItem = (id: string, field: keyof InvoiceItem, value: any) => {
+  const updateItem = (id: string, field: keyof QuoteItemType, value: any) => {
     setItems(items.map(item => item.id === id ? { ...item, [field]: value } : item));
   };
 
@@ -71,8 +72,8 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
              <SparklesIcon className="w-3.5 h-3.5 text-tunisia-red" />
              <span className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">Creation Workspace</span>
           </div>
-          <h1 className="text-2xl font-black text-slate-950 tracking-tight leading-none">Éditeur de Facture</h1>
-          <p className="text-[11px] font-bold text-slate-400 mt-2 opacity-60">Émission de documents fiscaux avec précision.</p>
+          <h1 className="text-2xl font-black text-slate-950 tracking-tight leading-none">Éditeur de Devis</h1>
+          <p className="text-[11px] font-bold text-slate-400 mt-2 opacity-60">Émission de devis commerciaux avec précision.</p>
         </div>
 
         <div className="space-y-8">
@@ -92,7 +93,7 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 p-6 rounded-2xl bg-slate-50/50 border border-slate-100 transition-all">
                 <div className="space-y-1.5">
-                  <label className="text-[8px] font-black uppercase tracking-widest text-slate-400 ml-1">Raison Sociale</label>
+                  <label className="text-[8px] font-black uppercase tracking-widest text-slate-400 ml-1">Raison Sociale / Nom</label>
                   <input
                     type="text"
                     name="billingName"
@@ -104,19 +105,19 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[8px] font-black uppercase tracking-widest text-slate-400 ml-1">Matricule Fiscal</label>
-                  <input type="text" name="tax_id" placeholder="MF..." className="w-full bg-white border border-slate-100 rounded-xl py-3 px-5 text-[11px] font-bold text-slate-900 outline-none focus:border-tunisia-red/20 transition-all placeholder:opacity-30" />
+                  <label className="text-[8px] font-black uppercase tracking-widest text-slate-400 ml-1">Matricule Fiscal / CIN</label>
+                  <input type="text" name="tax_id" placeholder="MF ou CIN..." className="w-full bg-white border border-slate-100 rounded-xl py-3 px-5 text-[11px] font-bold text-slate-900 outline-none focus:border-tunisia-red/20 transition-all placeholder:opacity-30" />
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-[8px] font-black uppercase tracking-widest text-slate-400 ml-1">Téléphone</label>
-                  <input type="text" name="phone" placeholder="+216 -- --- ---" required className="w-full bg-white border border-slate-100 rounded-xl py-3 px-5 text-[11px] font-bold text-slate-900 outline-none focus:border-tunisia-red/20 transition-all placeholder:opacity-30" />
+                  <input type="text" name="phone" placeholder="+216 -- --- ---" className="w-full bg-white border border-slate-100 rounded-xl py-3 px-5 text-[11px] font-bold text-slate-900 outline-none focus:border-tunisia-red/20 transition-all placeholder:opacity-30" />
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-[8px] font-black uppercase tracking-widest text-slate-400 ml-1">Email</label>
                   <input type="email" name="email" placeholder="contact@..." required className="w-full bg-white border border-slate-100 rounded-xl py-3 px-5 text-[11px] font-bold text-slate-900 outline-none focus:border-tunisia-red/20 transition-all placeholder:opacity-30" />
                 </div>
                 <div className="md:col-span-2 space-y-1.5">
-                  <label className="text-[8px] font-black uppercase tracking-widest text-slate-400 ml-1">Adresse Facturation</label>
+                  <label className="text-[8px] font-black uppercase tracking-widest text-slate-400 ml-1">Adresse de facturation</label>
                   <input type="text" name="address" placeholder="Ville, Code Postal, Pays..." className="w-full bg-white border border-slate-100 rounded-xl py-3 px-5 text-[11px] font-bold text-slate-900 outline-none focus:border-tunisia-red/20 transition-all placeholder:opacity-30" />
                 </div>
               </div>
@@ -206,9 +207,22 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
           <div className="space-y-6 bg-white p-8 rounded-2xl border border-slate-100 shadow-xl shadow-slate-100/50 relative overflow-hidden group transition-all hover:border-tunisia-red/10">
             <div className="absolute top-0 right-0 w-32 h-32 bg-tunisia-red/5 blur-[40px] rounded-full"></div>
             
-            <div className="flex items-center gap-3 border-b border-slate-50 pb-5">
-               <div className="w-7 h-7 rounded-full bg-slate-900 text-white flex items-center justify-center text-[9px] font-black italic">03</div>
-               <h2 className="text-[10px] font-black uppercase tracking-widest text-slate-400">Résumé & Validation</h2>
+            <div className="flex items-center justify-between border-b border-slate-50 pb-5">
+               <div className="flex items-center gap-3">
+                  <div className="w-7 h-7 rounded-full bg-slate-900 text-white flex items-center justify-center text-[9px] font-black italic">03</div>
+                  <h2 className="text-[10px] font-black uppercase tracking-widest text-slate-400">Résumé & Validation</h2>
+               </div>
+               
+               <div className="flex items-center gap-2">
+                 <label className="text-[8px] font-black uppercase tracking-widest text-slate-400">Validité (jours):</label>
+                 <input 
+                   type="number" 
+                   name="validity_days" 
+                   value={validityDays}
+                   onChange={(e) => setValidityDays(parseInt(e.target.value) || 30)}
+                   className="w-16 bg-slate-50 border border-slate-100 rounded-lg py-1 px-2 text-[10px] font-bold text-slate-900 outline-none focus:border-tunisia-red/20"
+                 />
+               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -232,7 +246,7 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
               className="w-full py-4 bg-slate-900 text-white rounded-xl text-[9px] font-black uppercase tracking-[0.3em] shadow-lg shadow-slate-950/10 hover:bg-slate-800 disabled:opacity-20 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-3 group/submit mt-4"
             >
               <DocumentPlusIcon className="w-4 h-4 transition-transform group-hover/submit:translate-x-1" />
-              Générer la Facture
+              Générer le Devis
             </button>
           </div>
         </div>
